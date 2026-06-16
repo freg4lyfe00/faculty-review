@@ -689,16 +689,14 @@ ${stateJson}
       const goalsCard = goalsReview.length ? `
         <div class="card" style="margin-bottom:1.25rem">
           <div class="card-header">
-            <span class="card-title">${priorYr ? `AY ${priorYr} goals` : 'Goals'} — progress</span>
+            <span class="card-title">GOALS — ${priorYr || yr}</span>
             ${goTab('selfeval','View in self-evaluation →')}
           </div>
-          ${goalsReview.map(g => {
-            const prog = (g.progress||'').trim();
-            return `<div class="snapshot-section" style="padding:.7rem 1.5rem">
+          ${goalsReview.map(g =>
+            `<div class="snapshot-section" style="padding:.7rem 1.5rem">
               <div style="font-size:13px;font-weight:500">${esc(g.goalText)}</div>
-              <div style="font-size:12px;margin-top:3px;color:${prog?'var(--c-text-secondary)':'var(--c-text-muted)'};${prog?'':'font-style:italic'}">${prog||'No progress noted yet'}</div>
-            </div>`;
-          }).join('')}
+            </div>`
+          ).join('')}
         </div>` : '';
 
       // Publications
