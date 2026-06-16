@@ -199,7 +199,7 @@
 
   <script id="appData" type="application/json">
 {
-  "faculty": { "name": "", "title": "", "division": "" },
+  "faculty": { "name": "", "title": "", "division": "HSR - Pediatrics" },
   "years": {
     "2025-26": {
       "publications": [],
@@ -445,7 +445,7 @@ ${stateJson}
     function renderSetupCard() {
       if (state.faculty.name || document.getElementById('setup-card')) return;
       const card = document.createElement('div'); card.id = 'setup-card'; card.className = 'setup-card';
-      card.innerHTML = `<div class="card-header" style="background:var(--c-purple-light)"><span class="card-title">Welcome — please enter your details to get started</span></div><div style="padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><div class="se-label" style="margin-top:0">Name</div><input class="setup-input" id="setup-name" type="text" placeholder="Full name" value="${esc(state.faculty.name||'')}"></div><div><div class="se-label" style="margin-top:0">Title</div><input class="setup-input" id="setup-title" type="text" placeholder="Title / rank" value="${esc(state.faculty.title||'')}"></div><div><div class="se-label" style="margin-top:0">Division</div><input class="setup-input" id="setup-division" type="text" placeholder="Division / department" value="${esc(state.faculty.division||'')}"></div><div style="display:flex;align-items:flex-end"><button class="btn btn-primary" id="btn-setup-save" style="width:100%">Begin →</button></div></div>`;
+      card.innerHTML = `<div class="card-header" style="background:var(--c-purple-light)"><span class="card-title">Welcome — please enter your details to get started</span></div><div style="padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><div class="se-label" style="margin-top:0">Name</div><input class="setup-input" id="setup-name" type="text" placeholder="Full name" value="${esc(state.faculty.name||'')}"></div><div><div class="se-label" style="margin-top:0">Career Stage</div><select class="setup-input" id="setup-title"><option value="" disabled ${!state.faculty.title?'selected':''}>Select career stage</option><option value="Assistant Professor" ${state.faculty.title==='Assistant Professor'?'selected':''}>Assistant Professor</option><option value="Associate Professor" ${state.faculty.title==='Associate Professor'?'selected':''}>Associate Professor</option><option value="Professor" ${state.faculty.title==='Professor'?'selected':''}>Professor</option></select></div><div><div class="se-label" style="margin-top:0">Division</div><input class="setup-input" id="setup-division" type="text" placeholder="Division / department" value="${esc(state.faculty.division||'')}"></div><div style="display:flex;align-items:flex-end"><button class="btn btn-primary" id="btn-setup-save" style="width:100%">Begin →</button></div></div>`;
       document.getElementById('content-area').before(card);
     }
 
