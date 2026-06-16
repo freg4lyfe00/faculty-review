@@ -681,37 +681,52 @@ ${stateJson}
       const m = getMetrics(yr), d = getDeltas(yr);
       const mc = (label, value, key) => `<div class="metric-card"><div class="metric-label">${label}</div><div class="metric-value">${value}</div>${deltaHtml(d,key)}</div>`;
       const goTab = (tab, text) => `<button class="snapshot-more" data-action="go-tab" data-tab="${tab}">${text}</button>`;
-      const none = () => '<p class="snapshot-empty">No entries yet.</p>';
 
       // Profile card + prior-year goals
       const priorYr = getPriorYear(yr);
       const goalsReview = (se.goalsReview || []).filter(g => (g.goalText||'').trim());
 
-      // Publications
+      // Table builder — reuses existing data-table CSS
+      const tbl = (heads, rows, span) => {
+        const ths = heads.map(([label, w]) => `<th${w?` style="width:${w}"`:''}>${label}</th>`).join('');
+        const body = rows.length
+          ? rows.join('')
+          : `<tr><td colspan="${span}" class="empty-state">No entries yet.</td></tr>`;
+        return `<table class="data-table"><thead><tr>${ths}</tr></thead><tbody>${body}</tbody></table>`;
+      };
+
+      // Publications — Citation | Status | Type
       const pubs = yd.publications || [];
-      const pubRows = pubs.slice(0,5).map(p =>
-        `<div class="snapshot-row"><span class="snap-text">${esc(p.citation)}</span>${bdg(p.status)}</div>`).join('');
-      const pubMore = pubs.length > 5 ? `<div style="padding:4px 0">${goTab('publications',`+${pubs.length-5} more — view Publications →`)}</div>` : '';
+      const pubTbl = tbl(
+        [['Citation','62%'],['Status','16%'],['Type','']],
+        pubs.slice(0,5).map(p => `<tr><td>${esc(p.citation)}</td><td>${bdg(p.status)}</td><td>${bdg(p.type)}</td></tr>`),
+        3);
+      const pubMore = pubs.length > 5 ? goTab('publications', `+${pubs.length-5} more — view all →`) : '';
 
-      // Presentations
+      // Presentations — Date | Event | Type | Title
       const prs = yd.presentations || [];
-      const prsRows = prs.slice(0,5).map(p =>
-        `<div class="snapshot-row"><span class="snap-text">${p.date?`<span class="snap-meta">${esc(p.date)}</span> · `:''} ${esc(p.event)}</span>${bdg(p.type)}</div>`).join('');
-      const prsMore = prs.length > 5 ? `<div style="padding:4px 0">${goTab('presentations',`+${prs.length-5} more — view Presentations →`)}</div>` : '';
+      const prsTbl = tbl(
+        [['Date','10%'],['Event','27%'],['Type','14%'],['Title','']],
+        prs.slice(0,5).map(p => `<tr><td style="white-space:nowrap;color:var(--c-text-muted)">${esc(p.date)}</td><td>${esc(p.event)}</td><td>${bdg(p.type)}</td><td style="font-style:italic">${esc(p.title)}</td></tr>`),
+        4);
+      const prsMore = prs.length > 5 ? goTab('presentations', `+${prs.length-5} more — view all →`) : '';
 
-      // Grants
+      // Grants — Date | Source | Type | Title | Status
       const grn = yd.grants || [];
-      const grnRows = grn.slice(0,5).map(g =>
-        `<div class="snapshot-row"><span class="snap-text">${esc(g.title)} <span class="snap-meta">· ${esc(g.source)}${g.grantType?' '+esc(g.grantType):''}</span></span>${bdg(g.status)}</div>`).join('');
-      const grnMore = grn.length > 5 ? `<div style="padding:4px 0">${goTab('grants',`+${grn.length-5} more — view Grants →`)}</div>` : '';
+      const grnTbl = tbl(
+        [['Date','10%'],['Source','11%'],['Type','9%'],['Title',''],['Status','15%']],
+        grn.slice(0,5).map(g => `<tr><td style="white-space:nowrap;color:var(--c-text-muted)">${esc(g.date)}</td><td>${esc(g.source)}</td><td>${esc(g.grantType)}</td><td>${esc(g.title)}</td><td>${bdg(g.status)}</td></tr>`),
+        5);
+      const grnMore = grn.length > 5 ? goTab('grants', `+${grn.length-5} more — view all →`) : '';
 
-      // Mentors & mentees — 5 mentee rows
+      // Mentors & mentees — Name | Level | Comments
       const mentors = yd.mentors || [], mentees = yd.mentees || [];
-      const mentorLine = mentors.length ? mentors.map(x=>esc(x.name)).join(', ') : `<em class="snapshot-empty">No mentors added yet.</em>`;
-      const menteeRows = mentees.slice(0,5).map(x =>
-        `<div class="snapshot-row"><span class="snap-text">${esc(x.name)}</span>${bdg(x.level)}</div>`).join('');
-      const menteeMore = mentees.length > 5 ? `<div style="padding:4px 0">${goTab('mentors',`+${mentees.length-5} more →`)}</div>` : '';
-      const menteeEmpty = mentees.length === 0 ? `<p class="snapshot-empty">No mentees yet. ${goTab('mentors','Add →')}</p>` : '';
+      const mentorLine = mentors.length ? mentors.map(x => esc(x.name)).join(', ') : `<em class="snapshot-empty">No mentors added yet.</em>`;
+      const menteeTbl = tbl(
+        [['Name','26%'],['Level','21%'],['Comments / project','']],
+        mentees.slice(0,5).map(x => `<tr><td>${esc(x.name)}</td><td>${bdg(x.level)}</td><td style="color:var(--c-text-secondary)">${esc(x.comments)}</td></tr>`),
+        3);
+      const menteeMore = mentees.length > 5 ? goTab('mentors', `+${mentees.length-5} more →`) : '';
 
       // Self-eval highlights
       const contrib = (se.contributions||'').trim();
@@ -731,15 +746,15 @@ ${stateJson}
         <div class="snapshot-body">
           ${goalsReview.length ? `<div class="snapshot-section">
             <h3>GOALS — ${priorYr || yr}</h3>
-            ${goalsReview.map(g => `<div class="snapshot-row"><span class="snap-text">${esc(g.goalText)}</span></div>`).join('')}
-            <div style="padding:4px 0">${goTab('selfeval','View in self-evaluation →')}</div>
+            ${goalsReview.map(g => `<div style="font-size:13px;padding:4px 0">${esc(g.goalText)}</div>`).join('')}
+            <div style="padding:6px 0 2px">${goTab('selfeval','View in self-evaluation →')}</div>
           </div>` : ''}
-          <div class="snapshot-section"><h3>Publications</h3>${pubs.length?pubRows+pubMore:none()}</div>
-          <div class="snapshot-section"><h3>Presentations</h3>${prs.length?prsRows+prsMore:none()}</div>
-          <div class="snapshot-section"><h3>Grants</h3>${grn.length?grnRows+grnMore:none()}</div>
+          <div class="snapshot-section"><h3>Publications</h3>${pubTbl}${pubMore?`<div style="padding:4px 0">${pubMore}</div>`:''}</div>
+          <div class="snapshot-section"><h3>Presentations</h3>${prsTbl}${prsMore?`<div style="padding:4px 0">${prsMore}</div>`:''}</div>
+          <div class="snapshot-section"><h3>Grants</h3>${grnTbl}${grnMore?`<div style="padding:4px 0">${grnMore}</div>`:''}</div>
           <div class="snapshot-section"><h3>Mentors &amp; Mentees</h3>
-            <div style="font-size:12px;color:var(--c-text-muted);padding-bottom:6px"><span style="font-weight:500;color:var(--c-text-primary)">Mentored by:</span> ${mentorLine}</div>
-            ${menteeEmpty}${menteeRows}${menteeMore}
+            <div style="font-size:.85rem;padding:2px 0 8px"><span style="font-weight:500">Mentored by:</span> ${mentorLine}</div>
+            ${menteeTbl}${menteeMore?`<div style="padding:4px 0">${menteeMore}</div>`:''}
           </div>
           <div class="snapshot-section"><h3>Self-Evaluation Highlights</h3>
             ${contrib
