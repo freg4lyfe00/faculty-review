@@ -123,7 +123,8 @@
     .se-textarea:focus { border-color: var(--c-teal); outline: none; }
     .goal-block { border: 1px solid var(--c-border); border-radius: var(--radius-md); margin-bottom: .75rem; padding: .75rem; position: relative; }
     .goal-block.carried { background: var(--c-bg-secondary); }
-    .goal-text-input { background: transparent; border: none; color: var(--c-text-primary); font-family: inherit; font-size: .875rem; font-weight: 500; outline: none; width: 100%; }
+    .goal-text-input { background: transparent; border: none; border-bottom: 1.5px dashed var(--c-border-strong); color: var(--c-text-primary); font-family: inherit; font-size: .875rem; font-weight: 500; outline: none; padding-bottom: 2px; width: 100%; }
+    .goal-text-input:focus { border-bottom-color: var(--c-teal); border-bottom-style: solid; }
     .goal-text-input::placeholder { color: var(--c-text-muted); font-weight: 400; }
     .goal-top-fields { display: grid; gap: .5rem; grid-template-columns: 1fr 1fr; margin: .5rem 0 .4rem; }
     .goal-sub-label { color: var(--c-text-muted); font-size: .72rem; font-weight: 500; letter-spacing: .04em; margin-bottom: .2rem; text-transform: uppercase; }
@@ -676,11 +677,29 @@ ${stateJson}
     }
 
     function renderOverview(yr) {
-      const yd = state.years[yr] || {}, se = yd.selfeval || {}, f = state.faculty;
+      const yd = state.years[yr] || {}, se = yd.selfeval || {};
       const m = getMetrics(yr), d = getDeltas(yr);
       const mc = (label, value, key) => `<div class="metric-card"><div class="metric-label">${label}</div><div class="metric-value">${value}</div>${deltaHtml(d,key)}</div>`;
       const goTab = (tab, text) => `<button class="snapshot-more" data-action="go-tab" data-tab="${tab}">${text}</button>`;
       const none = () => '<p class="snapshot-empty">No entries yet.</p>';
+
+      // Prior-year goals card (replaces profile card)
+      const priorYr = getPriorYear(yr);
+      const goalsReview = (se.goalsReview || []).filter(g => (g.goalText||'').trim());
+      const goalsCard = goalsReview.length ? `
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-header">
+            <span class="card-title">${priorYr ? `AY ${priorYr} goals` : 'Goals'} — progress</span>
+            ${goTab('selfeval','View in self-evaluation →')}
+          </div>
+          ${goalsReview.map(g => {
+            const prog = (g.progress||'').trim();
+            return `<div class="snapshot-section" style="padding:.7rem 1.5rem">
+              <div style="font-size:13px;font-weight:500">${esc(g.goalText)}</div>
+              <div style="font-size:12px;margin-top:3px;color:${prog?'var(--c-text-secondary)':'var(--c-text-muted)'};${prog?'':'font-style:italic'}">${prog||'No progress noted yet'}</div>
+            </div>`;
+          }).join('')}
+        </div>` : '';
 
       // Publications
       const pubs = yd.publications || [];
@@ -700,12 +719,13 @@ ${stateJson}
         `<div class="snapshot-row"><span class="snap-text">${esc(g.title)} <span class="snap-meta">· ${esc(g.source)}${g.grantType?' '+esc(g.grantType):''}</span></span>${bdg(g.status)}</div>`).join('');
       const grnMore = grn.length > 5 ? `<div style="padding:4px 0">${goTab('grants',`+${grn.length-5} more — view Grants →`)}</div>` : '';
 
-      // Mentors & mentees
+      // Mentors & mentees — 5 mentee rows
       const mentors = yd.mentors || [], mentees = yd.mentees || [];
       const mentorLine = mentors.length ? mentors.map(x=>esc(x.name)).join(', ') : `<em class="snapshot-empty">No mentors added yet.</em>`;
-      const menteeLine = mentees.length
-        ? `${mentees.length} mentee${mentees.length!==1?'s':''} this year — ${goTab('mentors','View all →')}`
-        : `No mentees yet. ${goTab('mentors','Add →')}`;
+      const menteeRows = mentees.slice(0,5).map(x =>
+        `<div class="snapshot-row"><span class="snap-text">${esc(x.name)}</span>${bdg(x.level)}</div>`).join('');
+      const menteeMore = mentees.length > 5 ? `<div style="padding:4px 0">${goTab('mentors',`+${mentees.length-5} more →`)}</div>` : '';
+      const menteeEmpty = mentees.length === 0 ? `<p class="snapshot-empty">No mentees yet. ${goTab('mentors','Add →')}</p>` : '';
 
       // Self-eval highlights
       const contrib = (se.contributions||'').trim();
@@ -715,19 +735,15 @@ ${stateJson}
       const nextYr = nyMatch ? `${+nyMatch[1]+1}-${String((+nyMatch[1]+1)%100+1).padStart(2,'0')}` : 'next year';
 
       document.getElementById('content-area').innerHTML = `
-        <div class="card" style="margin-bottom:1.25rem"><div style="padding:1.1rem 1.5rem">
-          <div style="font-size:1.05rem;font-weight:600">${esc(f.name||'—')}</div>
-          <div style="color:var(--c-text-secondary);font-size:.85rem;margin-top:.2rem">${esc(f.title||'')}${f.division?' · '+esc(f.division):''}</div>
-          <div style="color:var(--c-purple);font-size:.78rem;font-weight:500;margin-top:.3rem;letter-spacing:.02em">Academic Year ${yr}</div>
-        </div></div>
+        ${goalsCard}
         <div class="metrics-grid" style="margin-bottom:1.25rem">${mc('Publications',m.publications,'publications')}${mc('Presentations',m.presentations,'presentations')}${mc('Active grants',m.grants,'grants')}${mc('Mentees',m.mentees,'mentees')}</div>
         <div class="snapshot-body">
           <div class="snapshot-section"><h3>Publications</h3>${pubs.length?pubRows+pubMore:none()}</div>
           <div class="snapshot-section"><h3>Presentations</h3>${prs.length?prsRows+prsMore:none()}</div>
           <div class="snapshot-section"><h3>Grants</h3>${grn.length?grnRows+grnMore:none()}</div>
           <div class="snapshot-section"><h3>Mentors &amp; Mentees</h3>
-            <div style="font-size:13px;padding:4px 0">${mentorLine}</div>
-            <div style="font-size:12px;color:var(--c-text-muted);padding:2px 0">${menteeLine}</div>
+            <div style="font-size:12px;color:var(--c-text-muted);padding-bottom:6px"><span style="font-weight:500;color:var(--c-text-primary)">Mentored by:</span> ${mentorLine}</div>
+            ${menteeEmpty}${menteeRows}${menteeMore}
           </div>
           <div class="snapshot-section"><h3>Self-Evaluation Highlights</h3>
             ${contrib
