@@ -97,18 +97,24 @@
     .delta-pos { color: var(--c-teal); font-size: .75rem; }
     .delta-neg { color: var(--c-amber-fg); font-size: .75rem; }
     .delta-same { color: var(--c-text-muted); font-size: .75rem; }
-    /* Checklist */
-    .checklist { list-style: none; padding: .25rem 0; }
-    .checklist li { align-items: center; border-bottom: 1px solid var(--c-border); display: flex; font-size: .875rem; gap: .65rem; padding: .55rem .75rem; }
-    .checklist li:last-child { border-bottom: none; }
+    /* Snapshot (Overview) */
+    .snapshot-body { background: var(--c-bg-primary); border: 1px solid var(--c-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; overflow: hidden; }
+    .snapshot-section { border-bottom: 0.5px solid var(--c-border); padding: 1rem 1.5rem; }
+    .snapshot-section:last-child { border-bottom: none; }
+    .snapshot-section h3 { color: var(--c-purple); font-size: 13px; font-weight: 500; letter-spacing: .04em; margin-bottom: 10px; text-transform: uppercase; }
+    .snapshot-row { align-items: center; display: flex; font-size: 13px; gap: 12px; justify-content: space-between; padding: 4px 0; }
+    .snap-text { color: var(--c-text-primary); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .snap-meta { color: var(--c-text-muted); font-size: 12px; }
+    .snapshot-more { background: none; border: none; color: var(--c-text-muted); cursor: pointer; font-size: 12px; padding: 0; }
+    .snapshot-more:hover { color: var(--c-teal); text-decoration: underline; }
+    .snapshot-empty { color: var(--c-text-muted); font-size: 13px; font-style: italic; margin: 0; padding: 4px 0; }
+    .snapshot-contrib { -webkit-box-orient: vertical; -webkit-line-clamp: 3; color: var(--c-text-primary); display: -webkit-box; font-size: 13px; line-height: 1.55; overflow: hidden; }
     /* Mentor section */
     .mentor-col-headers { border-bottom: 1px solid var(--c-border); display: flex; gap: .75rem; padding: .35rem .75rem; }
     .mentor-col-label { color: var(--c-text-muted); flex: 1; font-size: .68rem; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; }
     .mentor-row { align-items: center; border-bottom: 1px solid var(--c-border); display: flex; gap: .75rem; padding: .45rem .75rem; }
     .mentor-row input { background: var(--c-bg-primary); border: 1px solid var(--c-border); border-radius: var(--radius-sm); color: var(--c-text-primary); flex: 1; font-family: inherit; font-size: .875rem; padding: .3rem .5rem; }
     .mentor-row input:focus { border-color: var(--c-teal); outline: none; }
-    .notes-area { background: var(--c-bg-primary); border: 1px solid var(--c-border); border-radius: var(--radius-md); color: var(--c-text-primary); font-family: inherit; font-size: .875rem; min-height: 6rem; padding: 1rem; resize: vertical; width: 100%; }
-    .notes-area:focus { border-color: var(--c-teal); outline: none; }
     .cell-italic { font-style: italic; }
     /* Self-evaluation */
     .se-label { color: var(--c-text-secondary); font-size: .875rem; font-weight: 500; margin-bottom: .3rem; margin-top: .75rem; }
@@ -543,23 +549,66 @@
     }
 
     function renderOverview(yr) {
-      const m = getMetrics(yr), d = getDeltas(yr), se = (state.years[yr]||{}).selfeval || {};
-      const yd = state.years[yr] || {};
+      const yd = state.years[yr] || {}, se = yd.selfeval || {}, f = state.faculty;
+      const m = getMetrics(yr), d = getDeltas(yr);
       const mc = (label, value, key) => `<div class="metric-card"><div class="metric-label">${label}</div><div class="metric-value">${value}</div>${deltaHtml(d,key)}</div>`;
-      const checks = [
-        [(yd.publications||[]).length>=1, 'Publications: at least 1 entry'],
-        [(yd.presentations||[]).length>=1, 'Presentations: at least 1 entry'],
-        [(yd.grants||[]).length>=1, 'Grants: at least 1 entry'],
-        [(yd.mentors||[]).length>=1 && (yd.mentees||[]).length>=1, 'Mentors &amp; mentees: both present'],
-        [!!(se.contributions||'').trim(), 'Self-evaluation: contributions completed'],
-        [(se.goalsReview||[]).some(g=>(g.progress||'').trim()), 'Goals reviewed: at least one with progress'],
-        [!!yd.submitted, 'Submitted to division chief'],
-      ];
-      const ci = ([ok, label]) => `<li><span style="color:${ok?'var(--c-teal)':'var(--c-amber-fg)'}">${ok?'✓':'○'}</span><span style="color:${ok?'var(--c-teal)':'var(--c-amber-fg)'}">${label}</span></li>`;
+      const goTab = (tab, text) => `<button class="snapshot-more" data-action="go-tab" data-tab="${tab}">${text}</button>`;
+      const none = () => '<p class="snapshot-empty">No entries yet.</p>';
+
+      // Publications
+      const pubs = yd.publications || [];
+      const pubRows = pubs.slice(0,5).map(p =>
+        `<div class="snapshot-row"><span class="snap-text">${esc(p.citation)}</span>${bdg(p.status)}</div>`).join('');
+      const pubMore = pubs.length > 5 ? `<div style="padding:4px 0">${goTab('publications',`+${pubs.length-5} more — view Publications →`)}</div>` : '';
+
+      // Presentations
+      const prs = yd.presentations || [];
+      const prsRows = prs.slice(0,5).map(p =>
+        `<div class="snapshot-row"><span class="snap-text">${p.date?`<span class="snap-meta">${esc(p.date)}</span> · `:''} ${esc(p.event)}</span>${bdg(p.type)}</div>`).join('');
+      const prsMore = prs.length > 5 ? `<div style="padding:4px 0">${goTab('presentations',`+${prs.length-5} more — view Presentations →`)}</div>` : '';
+
+      // Grants
+      const grn = yd.grants || [];
+      const grnRows = grn.slice(0,5).map(g =>
+        `<div class="snapshot-row"><span class="snap-text">${esc(g.title)} <span class="snap-meta">· ${esc(g.source)}${g.grantType?' '+esc(g.grantType):''}</span></span>${bdg(g.status)}</div>`).join('');
+      const grnMore = grn.length > 5 ? `<div style="padding:4px 0">${goTab('grants',`+${grn.length-5} more — view Grants →`)}</div>` : '';
+
+      // Mentors & mentees
+      const mentors = yd.mentors || [], mentees = yd.mentees || [];
+      const mentorLine = mentors.length ? mentors.map(x=>esc(x.name)).join(', ') : `<em class="snapshot-empty">No mentors added yet.</em>`;
+      const menteeLine = mentees.length
+        ? `${mentees.length} mentee${mentees.length!==1?'s':''} this year — ${goTab('mentors','View all →')}`
+        : `No mentees yet. ${goTab('mentors','Add →')}`;
+
+      // Self-eval highlights
+      const contrib = (se.contributions||'').trim();
+      const reviewed = (se.goalsReview||[]).filter(g=>(g.progress||'').trim()).length;
+      const nextCount = (se.goalsNext||[]).length;
+      const nyMatch = yr.match(/^(\d{4})/);
+      const nextYr = nyMatch ? `${+nyMatch[1]+1}-${String((+nyMatch[1]+1)%100+1).padStart(2,'0')}` : 'next year';
+
       document.getElementById('content-area').innerHTML = `
-        <div class="metrics-grid">${mc('Publications',m.publications,'publications')}${mc('Presentations',m.presentations,'presentations')}${mc('Active grants',m.grants,'grants')}${mc('Mentees',m.mentees,'mentees')}</div>
-        <div class="card" style="margin-bottom:1.25rem"><div class="card-header"><span class="card-title">Completion checklist</span></div><ul class="checklist">${checks.map(ci).join('')}</ul></div>
-        <div class="card"><div class="card-header"><span class="card-title">Notes for division chief</span></div><div style="padding:1rem 1.25rem"><textarea class="notes-area" data-bind="selfeval.notes" placeholder="Anything you'd like to flag before submitting...">${esc(se.notes||'')}</textarea></div></div>`;
+        <div class="card" style="margin-bottom:1.25rem"><div style="padding:1.1rem 1.5rem">
+          <div style="font-size:1.05rem;font-weight:600">${esc(f.name||'—')}</div>
+          <div style="color:var(--c-text-secondary);font-size:.85rem;margin-top:.2rem">${esc(f.title||'')}${f.division?' · '+esc(f.division):''}</div>
+          <div style="color:var(--c-purple);font-size:.78rem;font-weight:500;margin-top:.3rem;letter-spacing:.02em">Academic Year ${yr}</div>
+        </div></div>
+        <div class="metrics-grid" style="margin-bottom:1.25rem">${mc('Publications',m.publications,'publications')}${mc('Presentations',m.presentations,'presentations')}${mc('Active grants',m.grants,'grants')}${mc('Mentees',m.mentees,'mentees')}</div>
+        <div class="snapshot-body">
+          <div class="snapshot-section"><h3>Publications</h3>${pubs.length?pubRows+pubMore:none()}</div>
+          <div class="snapshot-section"><h3>Presentations</h3>${prs.length?prsRows+prsMore:none()}</div>
+          <div class="snapshot-section"><h3>Grants</h3>${grn.length?grnRows+grnMore:none()}</div>
+          <div class="snapshot-section"><h3>Mentors &amp; Mentees</h3>
+            <div style="font-size:13px;padding:4px 0">${mentorLine}</div>
+            <div style="font-size:12px;color:var(--c-text-muted);padding:2px 0">${menteeLine}</div>
+          </div>
+          <div class="snapshot-section"><h3>Self-Evaluation Highlights</h3>
+            ${contrib
+              ? `<div class="snapshot-contrib">${esc(contrib)}</div><div style="padding:4px 0">${goTab('selfeval','Read more →')}</div>`
+              : `<p class="snapshot-empty">No contributions text yet. ${goTab('selfeval','Add →')}</p>`}
+            <div style="font-size:12px;color:var(--c-text-muted);padding-top:8px">${reviewed} goal${reviewed!==1?'s':''} reviewed · ${nextCount} new goal${nextCount!==1?'s':''} for ${nextYr} — ${goTab('selfeval','View self-evaluation →')}</div>
+          </div>
+        </div>`;
     }
 
     function renderContent() {
@@ -671,6 +720,7 @@
         return;
       }
       if (action === 'dismiss-alert') { document.getElementById('validation-alert')?.classList.add('hidden'); return; }
+      if (action === 'go-tab') { switchTab(btn.dataset.tab); return; }
       if (action === 'add-goal') {
         const gs = btn.dataset.goalSection;
         const g = { id:generateId(), goalText:'', carriedFrom:'', progress:'', barriers:'', feedback:'', support:'' };
