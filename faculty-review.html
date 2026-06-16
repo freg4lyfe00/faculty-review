@@ -683,21 +683,9 @@ ${stateJson}
       const goTab = (tab, text) => `<button class="snapshot-more" data-action="go-tab" data-tab="${tab}">${text}</button>`;
       const none = () => '<p class="snapshot-empty">No entries yet.</p>';
 
-      // Prior-year goals card (replaces profile card)
+      // Profile card + prior-year goals
       const priorYr = getPriorYear(yr);
       const goalsReview = (se.goalsReview || []).filter(g => (g.goalText||'').trim());
-      const goalsCard = goalsReview.length ? `
-        <div class="card" style="margin-bottom:1.25rem">
-          <div class="card-header">
-            <span class="card-title">GOALS — ${priorYr || yr}</span>
-            ${goTab('selfeval','View in self-evaluation →')}
-          </div>
-          ${goalsReview.map(g =>
-            `<div class="snapshot-section" style="padding:.7rem 1.5rem">
-              <div style="font-size:13px;font-weight:500">${esc(g.goalText)}</div>
-            </div>`
-          ).join('')}
-        </div>` : '';
 
       // Publications
       const pubs = yd.publications || [];
@@ -732,10 +720,20 @@ ${stateJson}
       const nyMatch = yr.match(/^(\d{4})/);
       const nextYr = nyMatch ? `${+nyMatch[1]+1}-${String((+nyMatch[1]+1)%100+1).padStart(2,'0')}` : 'next year';
 
+      const fac = state.faculty;
       document.getElementById('content-area').innerHTML = `
-        ${goalsCard}
-        <div class="metrics-grid" style="margin-bottom:1.25rem">${mc('Publications',m.publications,'publications')}${mc('Presentations',m.presentations,'presentations')}${mc('Active grants',m.grants,'grants')}${mc('Mentees',m.mentees,'mentees')}</div>
+        <div class="card" style="margin-bottom:1rem"><div style="padding:.85rem 1.5rem;display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap">
+          <span style="font-size:.95rem;font-weight:600">${esc(fac.name||'—')}</span>
+          <span style="font-size:.85rem;color:var(--c-text-secondary)">${esc(fac.title||'')}${fac.division?' · '+esc(fac.division):''}</span>
+          <span style="font-size:.78rem;color:var(--c-purple);font-weight:500;margin-left:auto">AY ${yr}</span>
+        </div></div>
+        <div class="metrics-grid" style="margin-bottom:1rem">${mc('Publications',m.publications,'publications')}${mc('Presentations',m.presentations,'presentations')}${mc('Active grants',m.grants,'grants')}${mc('Mentees',m.mentees,'mentees')}</div>
         <div class="snapshot-body">
+          ${goalsReview.length ? `<div class="snapshot-section">
+            <h3>GOALS — ${priorYr || yr}</h3>
+            ${goalsReview.map(g => `<div class="snapshot-row"><span class="snap-text">${esc(g.goalText)}</span></div>`).join('')}
+            <div style="padding:4px 0">${goTab('selfeval','View in self-evaluation →')}</div>
+          </div>` : ''}
           <div class="snapshot-section"><h3>Publications</h3>${pubs.length?pubRows+pubMore:none()}</div>
           <div class="snapshot-section"><h3>Presentations</h3>${prs.length?prsRows+prsMore:none()}</div>
           <div class="snapshot-section"><h3>Grants</h3>${grn.length?grnRows+grnMore:none()}</div>
