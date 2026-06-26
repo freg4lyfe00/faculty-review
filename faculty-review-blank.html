@@ -34,6 +34,10 @@
     .ay-pill:hover { background: rgba(255,255,255,.15); }
     .ay-pill.active { background: #fff; border-color: #fff; color: var(--c-purple); font-weight: 600; }
     .ay-add { padding: .22rem .65rem; font-size: 1.1rem; line-height: 1.2; }
+    .ay-pill-wrap { align-items: center; display: inline-flex; }
+    .ay-del { background: none; border: none; color: rgba(255,255,255,0); cursor: pointer; font-size: .75rem; margin-left: -.15rem; padding: .1rem .3rem .1rem .1rem; transition: color .15s; }
+    .ay-pill-wrap:hover .ay-del { color: rgba(255,255,255,.55); }
+    .ay-del:hover { color: #fff !important; }
     #tab-bar { background: var(--c-bg-primary); border-bottom: 1px solid var(--c-border); box-shadow: var(--shadow-sm); display: flex; flex-shrink: 0; overflow-x: auto; padding: 0 1rem; }
     .tab-btn { background: none; border: none; border-bottom: 2px solid transparent; color: var(--c-text-muted); cursor: pointer; font-size: .88rem; padding: .7rem 1rem; transition: color .15s, border-color .15s; white-space: nowrap; }
     .tab-btn:hover { color: var(--c-text-secondary); }
@@ -833,8 +837,10 @@ ${stateJson}
       document.getElementById('btn-edit-profile').style.display = state.faculty.name ? '' : 'none';
       const p = document.getElementById('ay-pills'); p.innerHTML = '';
       Object.keys(state.years).forEach(yr => {
-        const b = document.createElement('button'); b.className = 'ay-pill' + (yr === state.activeYear ? ' active' : ''); b.textContent = yr; b.dataset.year = yr; p.appendChild(b);
-        if (state.years[yr].submitted) { const sb = document.createElement('span'); sb.className = 'submitted-badge'; sb.textContent = 'Submitted'; p.appendChild(sb); }
+        const wrap = document.createElement('span'); wrap.className = 'ay-pill-wrap'; p.appendChild(wrap);
+        const b = document.createElement('button'); b.className = 'ay-pill' + (yr === state.activeYear ? ' active' : ''); b.textContent = yr; b.dataset.year = yr; wrap.appendChild(b);
+        const del = document.createElement('button'); del.className = 'ay-del'; del.dataset.deleteYear = yr; del.title = 'Remove year'; del.textContent = '×'; wrap.appendChild(del);
+        if (state.years[yr].submitted) { const sb = document.createElement('span'); sb.className = 'submitted-badge'; sb.textContent = 'Submitted'; wrap.appendChild(sb); }
       });
       const a = document.createElement('button'); a.className = 'ay-pill ay-add'; a.id = 'btn-add-year'; a.title = 'Add academic year'; a.textContent = '+'; p.appendChild(a);
     }
@@ -1007,6 +1013,14 @@ ${stateJson}
     // ── Event delegation: chrome ─────────────────────────────────────────────
     document.addEventListener('click', e => {
       if (e.target.id === 'btn-add-year') { addYear(); return; }
+      if (e.target.dataset.deleteYear) {
+        const yr = e.target.dataset.deleteYear;
+        if (Object.keys(state.years).length <= 1) return;
+        if (!confirm(`Remove AY ${yr} and all its data? This cannot be undone.`)) return;
+        delete state.years[yr];
+        if (state.activeYear === yr) state.activeYear = Object.keys(state.years).sort().at(-1);
+        updateDirtyIndicator(); render(); return;
+      }
       if (e.target.id === 'btn-edit-profile') { showProfileCard(); return; }
       if (e.target.dataset.action === 'close-profile-card') { document.getElementById('setup-card')?.remove(); return; }
       if (e.target.id === 'btn-save') { saveMasterFile(); return; }
