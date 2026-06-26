@@ -1,3 +1,7 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/faculty-review.html" }]
+  "rewrites": [
+    { "source": "/cv-extractor.html", "destination": "/cv-extractor.html" },
+    { "source": "/cv-extractor-guide.md", "destination": "/cv-extractor-guide.md" },
+    { "source": "/(.*)", "destination": "/faculty-review.html" }
+  ]
 }

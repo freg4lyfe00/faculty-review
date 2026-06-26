@@ -1,0 +1,385 @@
+================================================================================
+  FACULTY ANNUAL REVIEW TOOL — GUIDE
+  Plain-language overview of what this is, where it lives, how to use it,
+  and why it works the way it does.
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+WHAT IS THIS?
+────────────────────────────────────────────────────────────────────────────────
+
+This is a single web page that a faculty member fills out once a year to
+document their work — publications, presentations, grants, mentoring activity,
+and self-reflection on goals. It replaces a Word doc or PDF form with something
+that saves itself, tracks changes, and produces clean outputs for the division
+chief.
+
+It lives as a single .html file. You can open it in any web browser by
+double-clicking it, just like a Word document. No internet connection is
+required to use it. No account, no login, no software to install.
+
+
+────────────────────────────────────────────────────────────────────────────────
+WHERE DOES IT LIVE?
+────────────────────────────────────────────────────────────────────────────────
+
+There are two ways to access it:
+
+  1. Online (shared link):
+     https://faculty-review-alpha.vercel.app
+     Anyone with this link can open it in a browser. Good for demos or
+     getting started. Note: changes made here are NOT saved to the cloud —
+     the file saves to your own computer (see "Saving" below).
+
+  2. On your computer (your personal copy):
+     The file is named something like:
+       faculty-review-Jane-Smith-2024-25.html
+     Once you save it (using the "Editable File" button), it lives on your
+     computer and contains all your data inside it. This is your working copy.
+     Keep it somewhere you can find it — your Desktop or Documents folder.
+
+
+────────────────────────────────────────────────────────────────────────────────
+HOW TO GET STARTED
+────────────────────────────────────────────────────────────────────────────────
+
+FIRST TIME:
+  1. Open the file in a web browser (double-click it, or visit the link above).
+  2. A "Welcome" box will appear asking for your name, career stage, and
+     division. Choose your career stage from the dropdown (Assistant Professor,
+     Associate Professor, or Professor) and click "Begin →".
+  3. Your name now appears in the top bar. You are ready to go.
+
+RETURNING:
+  Simply open your saved .html file. Everything you entered before will
+  be right there. If the browser detects a more recent backup, it will
+  offer to restore it.
+
+
+────────────────────────────────────────────────────────────────────────────────
+THE TABS — WHAT EACH ONE IS FOR
+────────────────────────────────────────────────────────────────────────────────
+
+The row of tabs across the top takes you to each section of the review.
+
+  OVERVIEW
+  ─────────
+  A read-only summary of your entire year on one page. It shows:
+    • Your name, career stage, and division at the top
+    • Four count boxes: total publications, presentations, active grants,
+      and mentees (with a note if the count went up or down from last year)
+    • Your goals from last year, carried forward from Self-evaluation
+    • Short tables of your publications, presentations, grants, and mentees
+      (up to 5 entries each, with a clickable link to see all of them)
+
+  Nothing to fill in here — it updates automatically as you add data in
+  the other tabs. Think of it as your "at a glance" dashboard.
+
+  TRENDS
+  ───────
+  Charts that compare your activity across multiple academic years — how
+  your publication count, presentations, active grants, and mentees have
+  changed over time. This tab only shows meaningful data once you have
+  more than one year saved in the file.
+
+  PUBLICATIONS
+  ─────────────
+  Add each paper, review, editorial, or book chapter you worked on this
+  year. For each one you enter: the full citation, whether it is published /
+  submitted / in revision / in preparation, and what type of work it is.
+  Click "+ Add" to start a row, fill in the fields, and click Save.
+
+  PRESENTATIONS
+  ──────────────
+  Add talks, posters, and workshops you gave this year. For each one:
+  the date (like "Mar 2026"), the event name, the type (invited talk /
+  oral abstract / poster / workshop), and the title.
+
+  GRANTS
+  ───────
+  Add any grants you submitted, received, or are working on. For each one:
+  the date, funding source (NIH, AHRQ, etc.), grant type (R01, K23, etc.),
+  the full title, and the status (awarded / under review / not funded).
+
+  MENTORS & MENTEES
+  ──────────────────
+  Two parts:
+    • My mentor(s) — the people who mentor YOU. Add their name and role.
+      These fields are always live — just type and they save automatically.
+    • My mentees — the people YOU mentor. Add each person's name, their
+      level (undergraduate, medical student, graduate student, resident,
+      fellow, or faculty), and a note about their project.
+
+  SELF-EVALUATION
+  ────────────────
+  Your written reflection. This is the heart of the annual review. It has
+  several sections:
+
+    Contributions & highlights — What are you most proud of this year?
+    AY [prior year] goals — review — Goals you set last year, now with
+      space to note your progress, any barriers, and feedback received.
+    AY [this year] goals — Goals you are setting for the coming year,
+      and what support you need.
+    Leadership roles — Any leadership positions you hold and your plans.
+    Academic promotion — Whether you are working toward promotion and
+      where you are in that process.
+    CARE+ & salary review — A checkbox confirming you reviewed your
+      salary sheet, plus any outstanding questions.
+    Professional development — How the department can support your career.
+    Division Chief comments — This section is for the chief to fill in
+      after you submit. It appears blank for you.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SAVING YOUR WORK
+────────────────────────────────────────────────────────────────────────────────
+
+This tool does NOT save automatically to a server. Your data lives inside
+the file itself. Here is how saving works:
+
+  AUTOMATIC BACKUP (every 60 seconds)
+  The tool quietly saves a backup copy to your browser's local storage —
+  a temporary holding area on your computer. If you close the tab by
+  accident, the next time you open the file the browser will offer to
+  restore from that backup.
+
+  MANUAL SAVE — "Editable File" button (bottom left of the screen)
+  This is your main save action. Clicking it downloads a fresh copy of
+  the .html file with all your current data baked in. Replace your old
+  copy with this new one. Treat it like hitting "Save" in Word.
+
+  The "Unsaved changes" badge (amber, bottom left) pulses whenever you
+  have made changes that have not yet been saved to a file. It disappears
+  after you click "Editable File."
+
+  TIP: Save after every working session. The file is small and fast to
+  download. Keep only the most recent copy.
+
+
+────────────────────────────────────────────────────────────────────────────────
+THE ACADEMIC YEAR SWITCHER
+────────────────────────────────────────────────────────────────────────────────
+
+In the top right corner you will see a pill-shaped button showing the
+current academic year (e.g. "2024-25"). If you have multiple years saved
+in the file, you can click between them to view or edit past years.
+
+The "+" button creates a new academic year. When you do this, the goals
+you set for the coming year in your Self-Evaluation are automatically
+carried over into the new year's "goals review" section — so you never
+have to retype them.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SHARING WITH THE DIVISION CHIEF
+────────────────────────────────────────────────────────────────────────────────
+
+There are two ways to share your completed review:
+
+  "READ-ONLY" button (bottom left)
+  ──────────────────────────────────
+  Downloads a full interactive dashboard — the same interface you use,
+  but with all editing removed. The division chief can click through every
+  tab, switch between years, and see the Trends charts, but cannot change
+  anything.
+  File is named: dashboard-readonly-[your name]-[date].html
+  Share this the same way you would share a Word document (email, folder).
+
+  "SUBMIT" button (bottom right)
+  ───────────────────────────────
+  For the official submission. Before it works, it checks that you have:
+    • Written something in Contributions & highlights
+    • Added at least one publication
+    • Noted progress on at least one goal
+  If anything is missing, it tells you what to complete first.
+
+  Once submitted, two files are automatically downloaded:
+    1. Your editable file (updated with a "Submitted" badge)
+    2. A clean, print-ready summary of this year's review
+       (named: annual-review-[your name]-[year]-export.html)
+
+  The "Submitted" badge also appears next to the year pill in the header
+  so it is easy to see which years have been officially submitted.
+
+
+────────────────────────────────────────────────────────────────────────────────
+ADDING / EDITING / DELETING ENTRIES
+────────────────────────────────────────────────────────────────────────────────
+
+Every data tab (Publications, Presentations, Grants, Mentors & Mentees)
+works the same way:
+
+  ADD:    Click the "+ Add" button in the top right of the section.
+          A new row opens in edit mode with blank fields.
+          Fill them in and click "Save", or press Enter.
+          Press Escape to cancel without saving.
+
+  EDIT:   Hover over a row — a pencil icon (✎) appears on the right.
+          Click it to open that row for editing.
+          Click "Save" or press Enter when done.
+
+  DELETE: Hover over a row — an × icon appears on the right.
+          Click it. The row turns amber and asks "Delete this entry? Yes / No"
+          Click Yes to confirm, or No to keep it. No pop-up windows.
+
+  LONG LISTS: Tables show 8 entries at a time by default. If you have more,
+          a "Show all" link appears at the bottom of the table. Click it to
+          see every entry, or "Show fewer" to collapse it again.
+
+For the Self-Evaluation tab, all fields are always open for typing —
+just click into any box and start writing. Changes save automatically
+to the file's memory as you type (you still need to click "Editable File"
+to write them to your saved copy).
+
+
+────────────────────────────────────────────────────────────────────────────────
+IMPORTING DATA FROM A JSON FILE
+────────────────────────────────────────────────────────────────────────────────
+
+If you have data prepared in a spreadsheet or database, you can import it
+into the tool all at once instead of entering each row by hand.
+
+  HOW TO IMPORT:
+  1. Click the "Import data" button in the top-right corner of the header
+     (it sits next to the year pills).
+  2. A file picker opens. Select your .json file.
+  3. The tool reads the file and loads the data into the matching year.
+     A confirmation message appears at the top of the screen.
+
+  WHAT GETS IMPORTED:
+  The import supports four sections: publications, presentations, grants,
+  and mentees. Any combination of these is fine — you do not need all four.
+  Mentor and self-evaluation data cannot be imported this way; those must
+  be filled in by hand.
+
+  If the year in the file already exists in the tool, you will be asked to
+  confirm before anything is replaced. If it is a new year, it is created
+  automatically.
+
+  WHAT THE JSON FILE LOOKS LIKE:
+  The file is a plain text file ending in .json. Think of it like a very
+  structured list. Here is a small example showing all four sections:
+
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │ {                                                                   │
+  │   "academicYear": "2025-2026",                                      │
+  │                                                                     │
+  │   "publications": [                                                 │
+  │     {                                                               │
+  │       "citation": "Smith J. My paper title. J Example. 2026;1:1.", │
+  │       "status": "published",                                        │
+  │       "type": "original-article"                                    │
+  │     }                                                               │
+  │   ],                                                                │
+  │                                                                     │
+  │   "presentations": [                                                │
+  │     {                                                               │
+  │       "date": "Mar 2026",                                           │
+  │       "event": "National Example Conference",                       │
+  │       "type": "invited-talk",                                       │
+  │       "title": "My talk title"                                      │
+  │     }                                                               │
+  │   ],                                                                │
+  │                                                                     │
+  │   "grants": [                                                       │
+  │     {                                                               │
+  │       "date": "Sep 2025",                                           │
+  │       "source": "NIH",                                              │
+  │       "grantType": "R01",                                           │
+  │       "title": "Full grant title here",                             │
+  │       "status": "awarded"                                           │
+  │     }                                                               │
+  │   ],                                                                │
+  │                                                                     │
+  │   "mentees": [                                                      │
+  │     {                                                               │
+  │       "name": "Pat Lee",                                            │
+  │       "level": "graduate-student",                                  │
+  │       "comments": "Working on example project"                      │
+  │     }                                                               │
+  │   ]                                                                 │
+  │ }                                                                   │
+  └─────────────────────────────────────────────────────────────────────┘
+
+  REQUIRED FIELD: "academicYear" must always be present (e.g. "2025-2026").
+  Without it, the file will be rejected.
+
+  VALID VALUES FOR DROPDOWN FIELDS:
+  These fields only accept the exact values listed below — no other text.
+
+    Publications — status:
+      "published"  "submitted"  "in-revision"  "in-preparation"
+
+    Publications — type:
+      "original-article"  "editorial"  "review"  "guidelines"  "book-chapter"
+
+    Presentations — type:
+      "invited-talk"  "oral-abstract"  "poster"  "workshop"
+
+    Grants — status:
+      "awarded"  "under-review"  "not-funded"
+
+    Mentees — level:
+      "undergraduate"  "medical-student"  "graduate-student"
+      "resident"  "fellow"  "faculty"
+
+  TIP: A sample file called "sample json.json" is included alongside this
+  guide. You can open it in any text editor to see the format, then copy
+  and edit it to match your own data.
+
+
+────────────────────────────────────────────────────────────────────────────────
+PRINTING
+────────────────────────────────────────────────────────────────────────────────
+
+Use your browser's built-in Print command (Ctrl+P on Windows, Cmd+P on Mac).
+The tool has a print layout built in — buttons, navigation, and editing
+controls are hidden automatically, and only the content of the current tab
+is printed with clean formatting.
+
+For a complete printed record of all sections, use the Read-Only download
+and print from that file, since it contains all tabs visible at once.
+
+
+────────────────────────────────────────────────────────────────────────────────
+WHY IT WORKS THIS WAY
+────────────────────────────────────────────────────────────────────────────────
+
+The tool was intentionally built as a single file — no database, no server,
+no account required — for a few reasons:
+
+  • Privacy: Your data never leaves your computer unless you choose to
+    share the file. Nothing is stored online.
+
+  • Durability: The file works the same way in 10 years as it does today.
+    There is no service that can shut down and take your records with it.
+
+  • Portability: You can email it, put it on a USB drive, or keep it in
+    a shared folder. Opening it requires only a web browser, which everyone
+    already has.
+
+  • Self-contained history: Every year's data lives in the same file.
+    When you start a new academic year, last year's data is still there.
+    The Trends tab gets richer the longer you use it.
+
+
+────────────────────────────────────────────────────────────────────────────────
+QUICK REFERENCE
+────────────────────────────────────────────────────────────────────────────────
+
+  Open the tool         →  Double-click the .html file, or visit the link
+  Save your work        →  Click "Editable File" (bottom left)
+  Share with chief      →  Click "Read-Only" (bottom left) → email the file
+  Official submit       →  Click "Submit" (bottom right)
+  New academic year     →  Click "+" next to the year pill (top right)
+  Import from JSON      →  Click "Import data" (top right, next to year pills)
+  Edit an entry         →  Hover the row → click ✎
+  Delete an entry       →  Hover the row → click × → confirm Yes
+  See all entries       →  Click "Show all" at the bottom of a table
+  Undo accidental close →  Reload and accept the backup when offered
+
+  Online link:  https://faculty-review-alpha.vercel.app
+  GitHub repo:  https://github.com/freg4lyfe00/faculty-review
+
+================================================================================

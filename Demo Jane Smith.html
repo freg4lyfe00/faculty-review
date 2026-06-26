@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Faculty Review</title>
@@ -54,11 +53,8 @@
     .card-header { align-items: center; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; padding: .875rem 1.25rem; }
     .card-title { font-size: .95rem; font-weight: 600; }
     .card-note { color: var(--c-text-muted); font-size: .75rem; margin-top: .2rem; }
-    .profile-edit-btn { background: none; border: none; color: rgba(255,255,255,.45); cursor: pointer; font-size: .82rem; margin-top: .15rem; padding: .1rem .3rem; }
-    .profile-edit-btn:hover { color: #fff; }
-    .card-add-footer { padding: .35rem .75rem .6rem; }
-    .btn-add-full { background: none; border: 1.5px dashed var(--c-border); border-radius: var(--radius-sm); color: var(--c-teal); cursor: pointer; font-size: 1.1rem; font-weight: 500; padding: .35rem; transition: border-color .15s, background .15s; width: 100%; }
-    .btn-add-full:hover { background: var(--c-teal-light); border-color: var(--c-teal); }
+    .btn-add { background: none; border: none; color: var(--c-teal); cursor: pointer; font-size: .82rem; font-weight: 500; padding: .25rem .5rem; }
+    .btn-add:hover { text-decoration: underline; }
     /* Tables */
     .data-table { border-collapse: collapse; width: 100%; }
     .data-table th { border-bottom: 1px solid var(--c-border); color: var(--c-text-muted); font-size: .72rem; font-weight: 500; letter-spacing: .04em; padding: .5rem .75rem; text-align: left; text-transform: uppercase; }
@@ -168,7 +164,7 @@
     /* Print */
     .section-print-header { display: none; }
     @media print {
-      #tab-bar, #app-footer, .ay-pills, .btn-add, .btn-add-full, .card-add-footer, .row-actions, .goal-delete, .recovery-banner, .validation-alert, .setup-card { display: none; }
+      #tab-bar, #app-footer, .ay-pills, .btn-add, .row-actions, .goal-delete, .recovery-banner, .validation-alert, .setup-card { display: none; }
       .card { border: 0.5px solid #ccc; box-shadow: none; break-inside: avoid; margin-bottom: 1rem; }
       body { color: #000; font-size: 12px; height: auto; overflow: visible; }
       #content-area { overflow: visible; }
@@ -178,14 +174,34 @@
 </head>
 <body>
   <header id="app-header">
-    <div id="faculty-info"><div id="faculty-name" class="faculty-name"></div><div id="faculty-title" class="faculty-title"></div></div>
+    <div><div id="faculty-name" class="faculty-name">Jane Smith</div><div id="faculty-title" class="faculty-title">Associate Professor</div></div>
     <div style="display:flex;align-items:center;gap:.75rem">
-      <div id="ay-pills" class="ay-pills"></div>
+      <div id="ay-pills" class="ay-pills"><button class="ay-pill" data-year="2025-2026">2025-2026</button><button class="ay-pill" data-year="2024-2025">2024-2025</button><button class="ay-pill active" data-year="2023-2024">2023-2024</button><button class="ay-pill ay-add" id="btn-add-year" title="Add academic year">+</button></div>
       <button id="btn-import" class="ay-pill">Import data</button>
     </div>
   </header>
-  <nav id="tab-bar"></nav>
-  <main id="content-area"></main>
+  <nav id="tab-bar"><button class="tab-btn active" data-tab="overview">Overview</button><button class="tab-btn" data-tab="trends">Trends</button><button class="tab-btn" data-tab="publications">Publications</button><button class="tab-btn" data-tab="presentations">Presentations</button><button class="tab-btn" data-tab="grants">Grants</button><button class="tab-btn" data-tab="mentors">Mentors &amp; Mentees</button><button class="tab-btn" data-tab="selfeval">Self-evaluation</button></nav>
+  <main id="content-area"><h2 class="section-print-header">Overview</h2>
+        <div class="card" style="margin-bottom:1rem"><div style="padding:.85rem 1.5rem;display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap">
+          <span style="font-size:.95rem;font-weight:600">Jane Smith</span>
+          <span style="font-size:.85rem;color:var(--c-text-secondary)">Associate Professor · HSR - Pediatrics</span>
+          <span style="font-size:.78rem;color:var(--c-purple);font-weight:500;margin-left:auto">AY 2023-2024</span>
+        </div></div>
+        <div class="metrics-grid" style="margin-bottom:1rem"><div class="metric-card"><div class="metric-label">Publications</div><div class="metric-value">6</div></div><div class="metric-card"><div class="metric-label">Presentations</div><div class="metric-value">10</div></div><div class="metric-card"><div class="metric-label">Active grants</div><div class="metric-value">2</div></div><div class="metric-card"><div class="metric-label">Mentees</div><div class="metric-value">7</div></div></div>
+        <div class="snapshot-body">
+          
+          <div class="snapshot-section"><h3>Publications</h3><table class="data-table"><thead><tr><th style="width:62%">Citation</th><th style="width:16%">Status</th><th>Type</th></tr></thead><tbody><tr><td>Patel S, Okafor C. Longitudinal patterns in example adoption. Journal of Examples. 2024;10(1):12-24.</td><td><span class="badge badge-teal">Published</span></td><td><span class="badge badge-muted">Original article</span></td></tr><tr><td>Patel S. Guidelines for standardized example reporting. Journal of Hypotheticals. 2024;5(2):45-50.</td><td><span class="badge badge-teal">Published</span></td><td><span class="badge badge-muted">Guidelines</span></td></tr><tr><td>Patel S, Lindqvist M. Comparative review of example frameworks. Ann Hypotheticals. 2024;19(4):300-315.</td><td><span class="badge badge-teal">Published</span></td><td><span class="badge badge-muted">Review</span></td></tr><tr><td>Patel S, Okafor C, Diallo F. A multi-site evaluation of example interventions.</td><td><span class="badge badge-amber">Submitted</span></td><td><span class="badge badge-muted">Original article</span></td></tr><tr><td>Okafor C, Patel S. Methodological considerations in example design.</td><td><span class="badge badge-amber">In revision</span></td><td><span class="badge badge-muted">Original article</span></td></tr></tbody></table><div style="padding:4px 0"><button class="snapshot-more" data-action="go-tab" data-tab="publications">+1 more — view all →</button></div></div>
+          <div class="snapshot-section"><h3>Presentations</h3><table class="data-table"><thead><tr><th style="width:10%">Date</th><th style="width:27%">Event</th><th style="width:14%">Type</th><th>Title</th></tr></thead><tbody><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Jul 2023</td><td>Summer Institute on Examples</td><td><span class="badge badge-purple">Invited talk</span></td><td style="font-style:italic">Foundations of modern example research</td></tr><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Aug 2023</td><td>International Example Society Meeting</td><td><span class="badge badge-teal">Oral abstract</span></td><td style="font-style:italic">Adoption patterns across three cohorts</td></tr><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Sep 2023</td><td>Regional Grand Rounds</td><td><span class="badge badge-purple">Invited talk</span></td><td style="font-style:italic">What examples teach us about variability</td></tr><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Oct 2023</td><td>Annual Symposium on Example Research</td><td><span class="badge badge-muted">Poster</span></td><td style="font-style:italic">Early findings from the multi-site evaluation</td></tr><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Nov 2023</td><td>Cross-Institutional Workshop</td><td><span class="badge badge-muted">Workshop</span></td><td style="font-style:italic">Hands-on example design methods</td></tr></tbody></table><div style="padding:4px 0"><button class="snapshot-more" data-action="go-tab" data-tab="presentations">+5 more — view all →</button></div></div>
+          <div class="snapshot-section"><h3>Grants</h3><table class="data-table"><thead><tr><th style="width:10%">Date</th><th style="width:11%">Source</th><th style="width:9%">Type</th><th>Title</th><th style="width:15%">Status</th></tr></thead><tbody><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Jul 2023</td><td>National Institute of Examples</td><td>R01</td><td>Multi-site evaluation of example interventions</td><td><span class="badge badge-teal">Awarded</span></td></tr><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Oct 2023</td><td>Foundation for Hypothetical Research</td><td>Career Development Award</td><td>Methodological innovation in example design</td><td><span class="badge badge-teal">Awarded</span></td></tr><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Jan 2024</td><td>Regional Research Council</td><td>Pilot grant</td><td>Standardizing example reporting practices</td><td><span class="badge badge-amber">Under review</span></td></tr><tr><td style="white-space:nowrap;color:var(--c-text-muted)">Apr 2024</td><td>International Example Society</td><td>Travel award</td><td>Dissemination of multi-site evaluation findings</td><td><span class="badge badge-muted">Not funded</span></td></tr></tbody></table></div>
+          <div class="snapshot-section"><h3>Mentors &amp; Mentees</h3>
+            <div style="font-size:.85rem;padding:2px 0 8px"><span style="font-weight:500">Mentored by:</span> <em class="snapshot-empty">No mentors added yet.</em></div>
+            <table class="data-table"><thead><tr><th style="width:26%">Name</th><th style="width:21%">Level</th><th>Comments / project</th></tr></thead><tbody><tr><td>Avery Collins</td><td><span class="badge badge-muted">Undergraduate</span></td><td style="color:var(--c-text-secondary)">Research assistant on multi-site evaluation</td></tr><tr><td>Sam Whitfield</td><td><span class="badge badge-muted">Medical student</span></td><td style="color:var(--c-text-secondary)">Summer project on example adoption patterns</td></tr><tr><td>Riley Tanaka</td><td><span class="badge badge-muted">Graduate student</span></td><td style="color:var(--c-text-secondary)">Dissertation chapter on example frameworks</td></tr><tr><td>Casey Bloom</td><td><span class="badge badge-muted">Graduate student</span></td><td style="color:var(--c-text-secondary)">Co-author on methodological pitfalls abstract</td></tr><tr><td>Devon Marsh</td><td><span class="badge badge-dark-teal">Resident</span></td><td style="color:var(--c-text-secondary)">QI project applying example design methods</td></tr></tbody></table><div style="padding:4px 0"><button class="snapshot-more" data-action="go-tab" data-tab="mentors">+2 more →</button></div>
+          </div>
+          <div class="snapshot-section"><h3>Self-Evaluation Highlights</h3>
+            <p class="snapshot-empty">No contributions text yet. <button class="snapshot-more" data-action="go-tab" data-tab="selfeval">Add →</button></p>
+            <div style="font-size:12px;color:var(--c-text-muted);padding-top:8px">0 goals reviewed · 0 new goals for 2024-25 — <button class="snapshot-more" data-action="go-tab" data-tab="selfeval">View self-evaluation →</button></div>
+          </div>
+        </div></main>
   <footer id="app-footer">
     <div class="footer-left">
       <div class="footer-downloads">
@@ -193,7 +209,7 @@
         <button id="btn-export" class="btn btn-dl-readonly">Read-Only</button>
         <button id="btn-save" class="btn btn-dl-editable">Editable File</button>
       </div>
-      <span id="dirty-badge" class="dirty-badge hidden">Unsaved changes</span>
+      <span id="dirty-badge" class="dirty-badge">Unsaved changes</span>
     </div>
     <div class="footer-right">
       <button id="btn-submit" class="btn btn-primary">Submit</button>
@@ -202,11 +218,385 @@
 
   <script id="appData" type="application/json">
 {
-  "faculty": { "name": "", "title": "", "division": "HSR - Pediatrics" },
-  "years": {},
-  "activeYear": ""
+  "faculty": {
+    "name": "Jane Smith",
+    "title": "Associate Professor",
+    "division": "HSR - Pediatrics"
+  },
+  "years": {
+    "2025-2026": {
+      "publications": [
+        {
+          "id": "sxpkf8y",
+          "citation": "Smith J, Doe A. A study of example things. Journal of Examples. 2026;12(3):100-110.",
+          "status": "published",
+          "type": "original-article"
+        },
+        {
+          "id": "2f7pgvj",
+          "citation": "Smith J. Another paper currently in review. Journal of Hypotheticals. 2026.",
+          "status": "submitted",
+          "type": "review"
+        }
+      ],
+      "presentations": [
+        {
+          "id": "ay1oem6",
+          "date": "Mar 2026",
+          "event": "National Conference on Example Studies",
+          "type": "poster",
+          "title": "Preliminary findings on example things"
+        },
+        {
+          "id": "jjc9jxz",
+          "date": "Jan 2026",
+          "event": "Department Grand Rounds",
+          "type": "invited-talk",
+          "title": "An overview of recent example research"
+        }
+      ],
+      "grants": [
+        {
+          "id": "asmla3u",
+          "date": "Sep 2025",
+          "source": "National Institute of Examples",
+          "grantType": "R01",
+          "title": "Mechanisms of example formation",
+          "status": "awarded"
+        },
+        {
+          "id": "7czzlhr",
+          "date": "Dec 2025",
+          "source": "Foundation for Hypothetical Research",
+          "grantType": "Pilot grant",
+          "title": "Early-stage exploration of example variability",
+          "status": "under-review"
+        }
+      ],
+      "mentors": [],
+      "mentees": [
+        {
+          "id": "poivo04",
+          "name": "Pat Lee",
+          "level": "graduate-student",
+          "comments": "Co-mentoring on example formation project"
+        },
+        {
+          "id": "k0xh0wl",
+          "name": "Jordan Kim",
+          "level": "resident",
+          "comments": "Clinical research rotation, Q2 2026"
+        }
+      ],
+      "selfeval": {
+        "goalsReview": [
+          {
+            "id": "fh693pw",
+            "goalText": "",
+            "carriedFrom": "",
+            "progress": "",
+            "barriers": "",
+            "feedback": ""
+          }
+        ],
+        "goalsNext": [],
+        "leadership": [],
+        "promotion": {},
+        "careReview": {}
+      }
+    },
+    "2024-2025": {
+      "publications": [
+        {
+          "id": "32ephgg",
+          "citation": "Garcia R, Nguyen T. Patterns in example formation across diverse settings. Journal of Examples. 2025;11(2):88-99.",
+          "status": "published",
+          "type": "original-article"
+        },
+        {
+          "id": "58gh103",
+          "citation": "Garcia R. Editorial: Why examples matter. Journal of Hypotheticals. 2025.",
+          "status": "published",
+          "type": "editorial"
+        }
+      ],
+      "presentations": [
+        {
+          "id": "e1espp4",
+          "date": "Oct 2024",
+          "event": "Annual Symposium on Example Research",
+          "type": "oral-abstract",
+          "title": "Cross-setting variability in example outcomes"
+        },
+        {
+          "id": "ui6wshq",
+          "date": "Feb 2025",
+          "event": "Regional Workshop Series",
+          "type": "workshop",
+          "title": "Teaching example methodology to early-career researchers"
+        }
+      ],
+      "grants": [
+        {
+          "id": "bfbq1jy",
+          "date": "Aug 2024",
+          "source": "Regional Research Council",
+          "grantType": "Seed grant",
+          "title": "Foundational study of example variability",
+          "status": "awarded"
+        },
+        {
+          "id": "u1vkhfx",
+          "date": "Apr 2025",
+          "source": "National Institute of Examples",
+          "grantType": "R21",
+          "title": "Exploratory mechanisms of example diversity",
+          "status": "not-funded"
+        }
+      ],
+      "mentors": [],
+      "mentees": [
+        {
+          "id": "bg08eim",
+          "name": "Taylor Brooks",
+          "level": "undergraduate",
+          "comments": "Independent study on example classification methods"
+        },
+        {
+          "id": "62q8nrk",
+          "name": "Morgan Reyes",
+          "level": "graduate-student",
+          "comments": "Thesis work on example variability; first-author manuscript in progress"
+        }
+      ],
+      "selfeval": {
+        "goalsReview": [
+          {
+            "id": "7rvp2ym",
+            "goalText": "",
+            "carriedFrom": "",
+            "progress": "",
+            "barriers": "",
+            "feedback": ""
+          }
+        ],
+        "goalsNext": [],
+        "leadership": [],
+        "promotion": {},
+        "careReview": {}
+      }
+    },
+    "2023-2024": {
+      "publications": [
+        {
+          "id": "rfz23mq",
+          "citation": "Patel S, Okafor C. Longitudinal patterns in example adoption. Journal of Examples. 2024;10(1):12-24.",
+          "status": "published",
+          "type": "original-article"
+        },
+        {
+          "id": "dvctcz7",
+          "citation": "Patel S. Guidelines for standardized example reporting. Journal of Hypotheticals. 2024;5(2):45-50.",
+          "status": "published",
+          "type": "guidelines"
+        },
+        {
+          "id": "xhngx6z",
+          "citation": "Patel S, Lindqvist M. Comparative review of example frameworks. Ann Hypotheticals. 2024;19(4):300-315.",
+          "status": "published",
+          "type": "review"
+        },
+        {
+          "id": "ptp75qs",
+          "citation": "Patel S, Okafor C, Diallo F. A multi-site evaluation of example interventions.",
+          "status": "submitted",
+          "type": "original-article"
+        },
+        {
+          "id": "dq1gqwf",
+          "citation": "Okafor C, Patel S. Methodological considerations in example design.",
+          "status": "in-revision",
+          "type": "original-article"
+        },
+        {
+          "id": "8o8f4vv",
+          "citation": "Patel S. Examples in transition: a chapter overview. In: Handbook of Examples. 2024.",
+          "status": "in-preparation",
+          "type": "book-chapter"
+        }
+      ],
+      "presentations": [
+        {
+          "id": "mvixxbp",
+          "date": "Jul 2023",
+          "event": "Summer Institute on Examples",
+          "type": "invited-talk",
+          "title": "Foundations of modern example research"
+        },
+        {
+          "id": "3gsev6e",
+          "date": "Aug 2023",
+          "event": "International Example Society Meeting",
+          "type": "oral-abstract",
+          "title": "Adoption patterns across three cohorts"
+        },
+        {
+          "id": "8wkqndl",
+          "date": "Sep 2023",
+          "event": "Regional Grand Rounds",
+          "type": "invited-talk",
+          "title": "What examples teach us about variability"
+        },
+        {
+          "id": "c21l7wa",
+          "date": "Oct 2023",
+          "event": "Annual Symposium on Example Research",
+          "type": "poster",
+          "title": "Early findings from the multi-site evaluation"
+        },
+        {
+          "id": "za1kkom",
+          "date": "Nov 2023",
+          "event": "Cross-Institutional Workshop",
+          "type": "workshop",
+          "title": "Hands-on example design methods"
+        },
+        {
+          "id": "plnr89j",
+          "date": "Jan 2024",
+          "event": "Winter Conference on Hypotheticals",
+          "type": "oral-abstract",
+          "title": "Methodological pitfalls in example studies"
+        },
+        {
+          "id": "frbcef5",
+          "date": "Feb 2024",
+          "event": "Department Grand Rounds",
+          "type": "invited-talk",
+          "title": "A decade of example research: where next?"
+        },
+        {
+          "id": "zcl787u",
+          "date": "Mar 2024",
+          "event": "National Conference on Example Studies",
+          "type": "poster",
+          "title": "Reporting standards: a proposal"
+        },
+        {
+          "id": "6dg0nux",
+          "date": "Apr 2024",
+          "event": "Junior Faculty Forum",
+          "type": "workshop",
+          "title": "Mentoring the next generation of example researchers"
+        },
+        {
+          "id": "gp68lu6",
+          "date": "May 2024",
+          "event": "Annual Society Meeting",
+          "type": "oral-abstract",
+          "title": "Comparative outcomes across example frameworks"
+        }
+      ],
+      "grants": [
+        {
+          "id": "d51ufrr",
+          "date": "Jul 2023",
+          "source": "National Institute of Examples",
+          "grantType": "R01",
+          "title": "Multi-site evaluation of example interventions",
+          "status": "awarded"
+        },
+        {
+          "id": "1vic3x5",
+          "date": "Oct 2023",
+          "source": "Foundation for Hypothetical Research",
+          "grantType": "Career Development Award",
+          "title": "Methodological innovation in example design",
+          "status": "awarded"
+        },
+        {
+          "id": "o2vcy9e",
+          "date": "Jan 2024",
+          "source": "Regional Research Council",
+          "grantType": "Pilot grant",
+          "title": "Standardizing example reporting practices",
+          "status": "under-review"
+        },
+        {
+          "id": "hgxvbdb",
+          "date": "Apr 2024",
+          "source": "International Example Society",
+          "grantType": "Travel award",
+          "title": "Dissemination of multi-site evaluation findings",
+          "status": "not-funded"
+        }
+      ],
+      "mentors": [],
+      "mentees": [
+        {
+          "id": "xdhwn2y",
+          "name": "Avery Collins",
+          "level": "undergraduate",
+          "comments": "Research assistant on multi-site evaluation"
+        },
+        {
+          "id": "gbfigmt",
+          "name": "Sam Whitfield",
+          "level": "medical-student",
+          "comments": "Summer project on example adoption patterns"
+        },
+        {
+          "id": "dv32ara",
+          "name": "Riley Tanaka",
+          "level": "graduate-student",
+          "comments": "Dissertation chapter on example frameworks"
+        },
+        {
+          "id": "iml13an",
+          "name": "Casey Bloom",
+          "level": "graduate-student",
+          "comments": "Co-author on methodological pitfalls abstract"
+        },
+        {
+          "id": "543mpcq",
+          "name": "Devon Marsh",
+          "level": "resident",
+          "comments": "QI project applying example design methods"
+        },
+        {
+          "id": "jz7x41d",
+          "name": "Harper Singh",
+          "level": "fellow",
+          "comments": "K-award preparation; second-author on review paper"
+        },
+        {
+          "id": "q7j1cer",
+          "name": "Quinn Alvarez",
+          "level": "faculty",
+          "comments": "Junior faculty co-mentee on grant writing"
+        }
+      ],
+      "selfeval": {
+        "goalsReview": [
+          {
+            "id": "6s7s6oo",
+            "goalText": "",
+            "carriedFrom": "",
+            "progress": "",
+            "barriers": "",
+            "feedback": ""
+          }
+        ],
+        "goalsNext": [],
+        "leadership": [],
+        "promotion": {},
+        "careReview": {}
+      }
+    }
+  },
+  "activeYear": "2023-2024"
 }
-  </script>
+</script>
 
   <script>
     const TABS = [
@@ -436,18 +826,12 @@ ${stateJson}
       setTimeout(() => el.classList.add('hidden'), 6000);
     }
 
-    function showProfileCard() {
-      if (document.getElementById('setup-card')) return;
-      const isEdit = !!state.faculty.name;
-      const heading = isEdit ? 'Edit profile' : 'Welcome — please enter your details to get started';
-      const btnLabel = isEdit ? 'Save changes' : 'Begin →';
-      const closeBtn = isEdit ? `<button class="icon-btn" data-action="close-profile-card" style="color:var(--c-text-muted)">✕</button>` : '';
+    function renderSetupCard() {
+      if (state.faculty.name || document.getElementById('setup-card')) return;
       const card = document.createElement('div'); card.id = 'setup-card'; card.className = 'setup-card';
-      card.innerHTML = `<div class="card-header" style="background:var(--c-purple-light)"><span class="card-title">${heading}</span>${closeBtn}</div><div style="padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><div class="se-label" style="margin-top:0">Name</div><input class="setup-input" id="setup-name" type="text" placeholder="Full name" value="${esc(state.faculty.name||'')}"></div><div><div class="se-label" style="margin-top:0">Career Stage</div><select class="setup-input" id="setup-title"><option value="" disabled ${!state.faculty.title?'selected':''}>Select career stage</option><option value="Assistant Professor" ${state.faculty.title==='Assistant Professor'?'selected':''}>Assistant Professor</option><option value="Associate Professor" ${state.faculty.title==='Associate Professor'?'selected':''}>Associate Professor</option><option value="Professor" ${state.faculty.title==='Professor'?'selected':''}>Professor</option></select></div><div><div class="se-label" style="margin-top:0">Division</div><input class="setup-input" id="setup-division" type="text" placeholder="Division / department" value="${esc(state.faculty.division||'')}"></div><div style="display:flex;align-items:flex-end"><button class="btn btn-primary" id="btn-setup-save" style="width:100%">${btnLabel}</button></div></div>`;
+      card.innerHTML = `<div class="card-header" style="background:var(--c-purple-light)"><span class="card-title">Welcome — please enter your details to get started</span></div><div style="padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><div class="se-label" style="margin-top:0">Name</div><input class="setup-input" id="setup-name" type="text" placeholder="Full name" value="${esc(state.faculty.name||'')}"></div><div><div class="se-label" style="margin-top:0">Career Stage</div><select class="setup-input" id="setup-title"><option value="" disabled ${!state.faculty.title?'selected':''}>Select career stage</option><option value="Assistant Professor" ${state.faculty.title==='Assistant Professor'?'selected':''}>Assistant Professor</option><option value="Associate Professor" ${state.faculty.title==='Associate Professor'?'selected':''}>Associate Professor</option><option value="Professor" ${state.faculty.title==='Professor'?'selected':''}>Professor</option></select></div><div><div class="se-label" style="margin-top:0">Division</div><input class="setup-input" id="setup-division" type="text" placeholder="Division / department" value="${esc(state.faculty.division||'')}"></div><div style="display:flex;align-items:flex-end"><button class="btn btn-primary" id="btn-setup-save" style="width:100%">Begin →</button></div></div>`;
       document.getElementById('content-area').before(card);
-      document.getElementById('setup-name').focus();
     }
-    function renderSetupCard() { if (!state.faculty.name) showProfileCard(); }
 
     let pendingBackup = null;
     function autoSave() {
@@ -647,7 +1031,7 @@ ${stateJson}
 
     // ── Tab renderers ────────────────────────────────────────────────────────
     function cardHtml(id, title, yr, section, body) {
-      return `<div class="card"><div class="card-header"><span class="card-title">${title} · AY ${yr}</span></div><div id="table-${section}">${body}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-row" data-section="${section}">+</button></div></div>`;
+      return `<div class="card"><div class="card-header"><span class="card-title">${title} · AY ${yr}</span><button class="btn-add" data-action="add-row" data-section="${section}">+ Add</button></div><div id="table-${section}">${body}</div></div>`;
     }
 
     function renderPublications(yr) { document.getElementById('content-area').innerHTML = cardHtml('publications','Publications',yr,'publications',tableHtml('publications',yr)); }
@@ -683,12 +1067,11 @@ ${stateJson}
       const mentorList = (d.mentors||[]).map(mentorRowHtml).join('') || `<p class="empty-state">No mentors yet — use Add to get started</p>`;
       document.getElementById('content-area').innerHTML = `
         <div class="card">
-          <div class="card-header"><div><span class="card-title">My mentor(s)</span><p class="card-note">Include the name and title of each person who mentors you.</p></div></div>
+          <div class="card-header"><div><span class="card-title">My mentor(s)</span><p class="card-note">Include the name and title of each person who mentors you.</p></div><button class="btn-add" data-action="add-mentor">+ Add mentor</button></div>
           <div class="mentor-col-headers"><span class="mentor-col-label">Name</span><span class="mentor-col-label">Title / role &amp; institution</span><span style="width:2rem"></span></div>
           <div id="mentor-list">${mentorList}</div>
-          <div class="card-add-footer"><button class="btn-add-full" data-action="add-mentor">+</button></div>
         </div>
-        <div class="card"><div class="card-header"><span class="card-title">My mentees · AY ${yr}</span></div><div id="table-mentees">${tableHtml('mentees',yr)}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-row" data-section="mentees">+</button></div></div>`;
+        <div class="card"><div class="card-header"><span class="card-title">My mentees · AY ${yr}</span><button class="btn-add" data-action="add-row" data-section="mentees">+ Add</button></div><div id="table-mentees">${tableHtml('mentees',yr)}</div></div>`;
     }
 
     function renderSelfeval(yr) {
@@ -704,9 +1087,9 @@ ${stateJson}
       const ldRows = se.leadership.map(leadershipRowHtml).join('') || '<p class="empty-state">No roles added yet.</p>';
       document.getElementById('content-area').innerHTML = `
 <div class="card"><div class="card-header"><span class="card-title">Contributions &amp; highlights</span></div><div style="padding:1.25rem"><p class="se-hint">What are your most important contributions and highlights this year?</p><p class="se-hint">Include your most significant contribution to the department, as well as anything else you'd like to highlight.</p>${TA('contributions',120)}</div></div>
-<div class="card"><div class="card-header"><span class="card-title">${priorTitle} — review &amp; update</span></div><p class="se-hint" style="padding:.5rem 1.25rem 0">${reviewHint}</p><div id="goals-review" style="padding:.75rem 1.25rem 1.25rem">${rGoals}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-goal" data-goal-section="goalsReview">+</button></div></div>
-<div class="card"><div class="card-header"><span class="card-title">AY '${yr} goals</span></div><p class="se-hint" style="padding:.5rem 1.25rem 0">Set your goals for the coming year and note what support you need.</p><div id="goals-next" style="padding:.75rem 1.25rem 1.25rem">${nGoals}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-goal" data-goal-section="goalsNext">+</button></div></div>
-<div class="card"><div class="card-header"><span class="card-title">Leadership roles</span></div><div class="ld-cols"><span class="mentor-col-label" style="flex:1">Role</span><span class="mentor-col-label" style="flex:1">Plan / focus for ${yr}</span><span style="width:2rem"></span></div><div id="ld-list">${ldRows}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-leadership">+</button></div></div>
+<div class="card"><div class="card-header"><span class="card-title">${priorTitle} — review &amp; update</span><button class="btn-add" data-action="add-goal" data-goal-section="goalsReview">+ Add goal</button></div><p class="se-hint" style="padding:.5rem 1.25rem 0">${reviewHint}</p><div id="goals-review" style="padding:.75rem 1.25rem 1.25rem">${rGoals}</div></div>
+<div class="card"><div class="card-header"><span class="card-title">AY '${yr} goals</span><button class="btn-add" data-action="add-goal" data-goal-section="goalsNext">+ Add goal</button></div><p class="se-hint" style="padding:.5rem 1.25rem 0">Set your goals for the coming year and note what support you need.</p><div id="goals-next" style="padding:.75rem 1.25rem 1.25rem">${nGoals}</div></div>
+<div class="card"><div class="card-header"><span class="card-title">Leadership roles</span><button class="btn-add" data-action="add-leadership">+ Add role</button></div><div class="ld-cols"><span class="mentor-col-label" style="flex:1">Role</span><span class="mentor-col-label" style="flex:1">Plan / focus for ${yr}</span><span style="width:2rem"></span></div><div id="ld-list">${ldRows}</div></div>
 <div class="card"><div class="card-header"><span class="card-title">Academic promotion</span></div><div style="padding:1.25rem">${CK('promotion.active','Actively working toward academic promotion in the next year')}<div class="se-label">Where are you in this process?</div>${TA('promotion.whereInProcess',60)}<div class="se-label">What input or guidance do you need?</div>${TA('promotion.guidanceNeeded',52)}</div></div>
 <div class="card"><div class="card-header"><span class="card-title">CARE+ &amp; salary review</span></div><div style="padding:1.25rem">${CK('careReview.completed','Reviewed CARE+ salary sheet and funding sources with Division Chief')}<div class="se-label">Outstanding questions or unresolved issues</div>${TA('careReview.outstandingQuestions',52)}</div></div>
 <div class="card"><div class="card-header"><span class="card-title">Professional development</span></div><div style="padding:1.25rem"><div class="se-label" style="margin-top:0">How can the department support your career over the next 2–3 years?</div>${TA('profDevelopment',80)}</div></div>
@@ -826,11 +1209,6 @@ ${stateJson}
     function renderHeader() {
       document.getElementById('faculty-name').textContent = state.faculty.name || 'Faculty Review';
       document.getElementById('faculty-title').textContent = state.faculty.title || '';
-      if (!document.getElementById('btn-edit-profile')) {
-        const b = document.createElement('button'); b.id = 'btn-edit-profile'; b.className = 'profile-edit-btn'; b.title = 'Edit profile'; b.textContent = '✎';
-        document.getElementById('faculty-info').appendChild(b);
-      }
-      document.getElementById('btn-edit-profile').style.display = state.faculty.name ? '' : 'none';
       const p = document.getElementById('ay-pills'); p.innerHTML = '';
       Object.keys(state.years).forEach(yr => {
         const b = document.createElement('button'); b.className = 'ay-pill' + (yr === state.activeYear ? ' active' : ''); b.textContent = yr; b.dataset.year = yr; p.appendChild(b);
@@ -994,21 +1372,9 @@ ${stateJson}
       if (e.key === 'Escape') editTr.querySelector('[data-action="cancel-row"]')?.click();
     });
 
-    // ── Keyboard shortcuts ───────────────────────────────────────────────────
-    document.addEventListener('keydown', e => {
-      if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && e.key === 'n') {
-        const tag = document.activeElement?.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-        e.preventDefault();
-        document.querySelector('#content-area .btn-add-full')?.click();
-      }
-    });
-
     // ── Event delegation: chrome ─────────────────────────────────────────────
     document.addEventListener('click', e => {
       if (e.target.id === 'btn-add-year') { addYear(); return; }
-      if (e.target.id === 'btn-edit-profile') { showProfileCard(); return; }
-      if (e.target.dataset.action === 'close-profile-card') { document.getElementById('setup-card')?.remove(); return; }
       if (e.target.id === 'btn-save') { saveMasterFile(); return; }
       if (e.target.id === 'btn-export') { exportReadOnlyDashboard(); return; }
       if (e.target.id === 'btn-import') { importData(); return; }
@@ -1040,5 +1406,6 @@ ${stateJson}
       window.addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
     });
   </script>
-</body>
-</html>
+
+
+</body></html>

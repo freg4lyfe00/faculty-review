@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Extractor</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+  <style>
+    :root {
+      --c-teal:#00867B; --c-amber:#EBAB21; --c-purple:#553178; --c-dark-teal:#00556F;
+      --c-teal-light:rgba(0,134,123,.12); --c-amber-light:rgba(235,171,33,.12); --c-purple-light:rgba(85,49,120,.12);
+      --c-bg-primary:#ffffff; --c-bg-secondary:#f5f5f7; --c-bg-tertiary:#ebebed;
+      --c-text-primary:#1a1a1a; --c-text-secondary:#4a4a4a; --c-text-muted:#767676;
+      --c-border:#e0e0e0; --c-border-strong:#b0b0b0; --c-amber-fg:#8a5e00;
+      --radius-sm:4px; --radius-md:8px; --radius-lg:12px; --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c-bg-primary:#1c1c1e; --c-bg-secondary:#242426; --c-bg-tertiary:#2e2e30;
+        --c-text-primary:#f0f0f0; --c-text-secondary:#c0c0c0; --c-text-muted:#888;
+        --c-border:#3a3a3c; --c-border-strong:#58585a; --c-amber-fg:#f5c842;
+        --c-teal-light:rgba(0,134,123,.22); --c-amber-light:rgba(235,171,33,.18); --c-purple-light:rgba(85,49,120,.22);
+        --shadow-sm:0 1px 3px rgba(0,0,0,.35);
+      }
+      .badge-dark-teal { color: var(--c-teal); }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui,-apple-system,sans-serif; color: var(--c-text-primary); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    #app-header { background: var(--c-purple); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.5rem; flex-shrink: 0; }
+    .app-title { font-size: 1.1rem; font-weight: 600; }
+    .app-subtitle { font-size: .82rem; opacity: .72; margin-top: .12rem; }
+    #tab-bar { background: var(--c-bg-primary); border-bottom: 1px solid var(--c-border); box-shadow: var(--shadow-sm); display: flex; flex-shrink: 0; overflow-x: auto; padding: 0 1rem; }
+    .tab-btn { background: none; border: none; border-bottom: 2px solid transparent; color: var(--c-text-muted); cursor: pointer; font-size: .88rem; padding: .7rem 1rem; transition: color .15s, border-color .15s; white-space: nowrap; }
+    .tab-btn:hover { color: var(--c-text-secondary); }
+    .tab-btn.active { border-bottom-color: var(--c-teal); color: var(--c-teal); font-weight: 500; }
+    #content-area { background: var(--c-bg-secondary); flex: 1; overflow-y: auto; padding: 1.5rem; }
+    /* Help panel */
+    #help-panel { background: var(--c-bg-primary); border-bottom: 1px solid var(--c-border); flex-shrink: 0; max-height: 52vh; overflow-y: auto; }
+    #help-content { padding: 1.1rem 1.5rem; font-size: .875rem; line-height: 1.65; color: var(--c-text-secondary); }
+    #help-content h2 { color: var(--c-purple); font-size: .9rem; font-weight: 600; margin: 1rem 0 .35rem; border-bottom: 1px solid var(--c-border); padding-bottom: .2rem; }
+    #help-content h2:first-child { margin-top: 0; }
+    #help-content h3 { color: var(--c-text-primary); font-size: .85rem; font-weight: 600; margin: .65rem 0 .2rem; }
+    #help-content p { margin-bottom: .45rem; }
+    #help-content ul { padding-left: 1.25rem; margin-bottom: .45rem; }
+    #help-content li { margin-bottom: .15rem; }
+    #help-content code { background: var(--c-bg-tertiary); border-radius: 3px; font-family: monospace; font-size: .8em; padding: .1rem .3rem; }
+    #help-content strong { color: var(--c-text-primary); font-weight: 600; }
+    /* Buttons */
+    .btn { border-radius: var(--radius-sm); cursor: pointer; font-size: .875rem; font-weight: 500; padding: .45rem 1rem; transition: background .15s, border-color .15s, color .15s; border: 1px solid transparent; }
+    .btn-primary { background: var(--c-teal); border-color: var(--c-teal); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--c-dark-teal); border-color: var(--c-dark-teal); }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-outlined { background: transparent; border: 1px solid var(--c-border-strong); color: var(--c-text-secondary); }
+    .btn-outlined:hover { background: var(--c-bg-tertiary); }
+    .btn-help { background: transparent; border: 1px solid rgba(255,255,255,.5); border-radius: 999px; color: #fff; cursor: pointer; font-size: .8rem; padding: .22rem .75rem; transition: background .15s; }
+    .btn-help:hover { background: rgba(255,255,255,.15); }
+    /* Cards */
+    .card { background: var(--c-bg-primary); border: 1px solid var(--c-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; overflow: hidden; }
+    .card-header { align-items: center; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; padding: .875rem 1.25rem; }
+    .card-title { font-size: .95rem; font-weight: 600; }
+    .card-note { color: var(--c-text-muted); font-size: .75rem; margin-top: .15rem; }
+    .btn-add { background: none; border: none; color: var(--c-teal); cursor: pointer; font-size: .82rem; font-weight: 500; padding: .25rem .5rem; }
+    .btn-add:hover { text-decoration: underline; }
+    /* Tables */
+    .data-table { border-collapse: collapse; width: 100%; }
+    .data-table th { border-bottom: 1px solid var(--c-border); color: var(--c-text-muted); font-size: .72rem; font-weight: 500; letter-spacing: .04em; padding: .5rem .75rem; text-align: left; text-transform: uppercase; }
+    .data-table td { border-bottom: 1px solid var(--c-border); font-size: .875rem; padding: .55rem .75rem; vertical-align: middle; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover .row-actions { opacity: 1; }
+    .row-actions { opacity: 0; transition: opacity .15s; white-space: nowrap; }
+    .icon-btn { background: none; border: none; color: var(--c-text-muted); cursor: pointer; padding: .2rem .3rem; }
+    .icon-btn:hover { color: var(--c-text-primary); }
+    .table-footer { align-items: center; border-top: 1px solid var(--c-border); color: var(--c-text-muted); display: flex; font-size: .78rem; justify-content: space-between; padding: .6rem 1.25rem; }
+    .show-all-btn { background: none; border: none; color: var(--c-teal); cursor: pointer; font-size: .78rem; }
+    /* Badges */
+    .badge { border-radius: var(--radius-sm); display: inline-block; font-size: .75rem; font-weight: 500; padding: .15rem .5rem; }
+    .badge-teal { background: var(--c-teal-light); color: var(--c-teal); }
+    .badge-amber { background: var(--c-amber-light); color: var(--c-amber-fg); }
+    .badge-muted { background: var(--c-bg-tertiary); color: var(--c-text-muted); }
+    .badge-purple { background: var(--c-purple-light); color: var(--c-purple); }
+    .badge-dark-teal { background: var(--c-teal-light); color: var(--c-dark-teal); }
+    /* Edit rows */
+    .edit-row td { background: var(--c-bg-secondary); padding: .4rem .75rem; }
+    .edit-row input, .edit-row select, .edit-row textarea { background: var(--c-bg-primary); border: 1px solid var(--c-border-strong); border-radius: var(--radius-sm); color: var(--c-text-primary); font-family: inherit; font-size: .85rem; padding: .3rem .5rem; width: 100%; }
+    .edit-row input:focus, .edit-row select:focus, .edit-row textarea:focus { border-color: var(--c-teal); outline: none; }
+    .edit-row textarea { min-height: 3.5rem; resize: vertical; }
+    .edit-row select { height: 2rem; }
+    .edit-actions { display: flex; gap: .5rem; margin-top: .35rem; }
+    .btn-save-row { background: none; border: none; color: var(--c-teal); cursor: pointer; font-size: .82rem; font-weight: 600; padding: 0; }
+    .btn-cancel-row { background: none; border: none; color: var(--c-text-muted); cursor: pointer; font-size: .82rem; padding: 0; }
+    /* Delete confirm */
+    .delete-confirm td { background: var(--c-amber-light); }
+    .delete-confirm-msg { align-items: center; display: flex; font-size: .875rem; gap: .75rem; }
+    .btn-confirm-yes { background: none; border: none; color: var(--c-teal); cursor: pointer; font-size: .875rem; font-weight: 600; }
+    .btn-confirm-no { background: none; border: none; color: var(--c-text-muted); cursor: pointer; font-size: .875rem; }
+    .empty-state { color: var(--c-text-muted); font-size: .875rem; font-style: italic; padding: 1.5rem; text-align: center; }
+    .cell-italic { font-style: italic; }
+    /* Upload tab */
+    .drop-zone { align-items: center; border: 2px dashed var(--c-teal); border-radius: var(--radius-md); color: var(--c-text-muted); cursor: pointer; display: flex; flex-direction: column; gap: .4rem; justify-content: center; min-height: 130px; padding: 2rem; text-align: center; transition: background .15s, border-color .15s; }
+    .drop-zone:hover, .drop-zone.dragover { background: var(--c-teal-light); border-color: var(--c-teal); }
+    .drop-arrow { color: var(--c-teal); font-size: 2rem; line-height: 1; }
+    .drop-main { color: var(--c-text-secondary); font-size: .9rem; }
+    .drop-link { color: var(--c-teal); font-weight: 500; text-decoration: underline; cursor: pointer; }
+    .drop-formats { font-size: .77rem; }
+    .file-info { align-items: flex-start; border-radius: var(--radius-sm); display: flex; font-size: .83rem; gap: .5rem; margin-top: .75rem; padding: .5rem .75rem; }
+    .file-info.ok { background: var(--c-teal-light); border: 1px solid var(--c-teal); color: var(--c-teal); }
+    .file-info.warn { background: var(--c-amber-light); border: 1px solid var(--c-amber); color: var(--c-amber-fg); }
+    .file-info.error { background: rgba(192,57,43,.1); border: 1px solid rgba(192,57,43,.4); color: #c0392b; }
+    .file-info.hidden { display: none; }
+    .year-range-row { align-items: center; display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: .4rem; }
+    .year-range-row label { align-items: center; color: var(--c-text-secondary); display: flex; font-size: .875rem; gap: .35rem; }
+    .year-select { background: var(--c-bg-primary); border: 1px solid var(--c-border-strong); border-radius: var(--radius-sm); color: var(--c-text-primary); font-family: inherit; font-size: .875rem; padding: .28rem .5rem; }
+    .year-summary { color: var(--c-text-muted); font-size: .78rem; font-style: italic; min-height: 1.1em; }
+    .extract-row { align-items: center; display: flex; gap: 1rem; flex-wrap: wrap; }
+    .status-ok { color: var(--c-teal); font-size: .85rem; }
+    .status-warn { color: var(--c-amber-fg); font-size: .85rem; }
+    .status-err { color: #c0392b; font-size: .85rem; }
+    /* Review tab */
+    .pills-bar { align-items: center; display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.1rem; }
+    .pills-label { color: var(--c-text-muted); font-size: .7rem; font-weight: 500; letter-spacing: .06em; margin-right: .15rem; text-transform: uppercase; }
+    .rev-pill { background: transparent; border: 1px solid var(--c-border-strong); border-radius: 999px; color: var(--c-text-secondary); cursor: pointer; font-size: .8rem; padding: .22rem .75rem; transition: background .15s; }
+    .rev-pill:hover { background: var(--c-bg-tertiary); }
+    .rev-pill.active { background: var(--c-purple); border-color: var(--c-purple); color: #fff; font-weight: 600; }
+    .rev-pill.unknown { border-color: var(--c-amber); color: var(--c-amber-fg); }
+    .rev-pill.unknown.active { background: var(--c-amber-light); border-color: var(--c-amber); color: var(--c-amber-fg); }
+    .download-bar { align-items: center; background: var(--c-bg-primary); border: 1px solid var(--c-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1.25rem; padding: 1rem 1.25rem; }
+    .download-note { color: var(--c-text-muted); font-size: .75rem; }
+    @media print { #app-header, #tab-bar, #help-panel, .btn-add, .row-actions, .download-bar { display: none; } }
+  </style>
+</head>
+<body>
+  <header id="app-header">
+    <div>
+      <div class="app-title">CV Extractor</div>
+      <div class="app-subtitle">Extract CV data into Faculty Review JSON &mdash; runs entirely in your browser, nothing uploaded</div>
+    </div>
+    <button id="btn-help" class="btn-help">? Help &#9660;</button>
+  </header>
+  <div id="help-panel" hidden>
+    <div id="help-content">Loading&hellip;</div>
+  </div>
+  <nav id="tab-bar"></nav>
+  <main id="content-area"></main>
+  <input type="file" id="file-input" accept=".pdf,.docx,.txt" style="display:none">
+
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // ── Constants ─────────────────────────────────────────────────────────────
+    const TABS = [
+      { id:'upload', label:'Upload & Extract' },
+      { id:'review', label:'Review & Download' }
+    ];
+
+    const LABELS = {
+      published:'Published', submitted:'Submitted', 'in-revision':'In revision', 'in-preparation':'In preparation',
+      'original-article':'Original article', editorial:'Editorial', review:'Review', guidelines:'Guidelines', 'book-chapter':'Book chapter',
+      'invited-talk':'Invited talk', 'oral-abstract':'Oral abstract', poster:'Poster', workshop:'Workshop',
+      awarded:'Awarded', 'under-review':'Under review', 'not-funded':'Not funded',
+      undergraduate:'Undergraduate', 'medical-student':'Medical student', 'graduate-student':'Graduate student',
+      resident:'Resident', fellow:'Fellow', faculty:'Faculty'
+    };
+    const BADGE_CLS = {
+      published:'teal', submitted:'amber', 'in-revision':'amber', 'in-preparation':'muted',
+      'original-article':'muted', editorial:'muted', review:'muted', guidelines:'muted', 'book-chapter':'muted',
+      'invited-talk':'purple', 'oral-abstract':'teal', poster:'muted', workshop:'muted',
+      awarded:'teal', 'under-review':'amber', 'not-funded':'muted',
+      undergraduate:'muted', 'medical-student':'muted', 'graduate-student':'muted',
+      resident:'dark-teal', fellow:'dark-teal', faculty:'purple'
+    };
+    const COLS = {
+      publications: [
+        { key:'citation',  label:'Citation', pct:60, tag:'textarea' },
+        { key:'status',    label:'Status',   pct:15, tag:'select', opts:['published','submitted','in-revision','in-preparation'] },
+        { key:'type',      label:'Type',     pct:18, tag:'select', opts:['original-article','editorial','review','guidelines','book-chapter'] }
+      ],
+      presentations: [
+        { key:'date',  label:'Date',  pct:11, tag:'input', ph:'MMM YYYY' },
+        { key:'event', label:'Event', pct:25, tag:'input' },
+        { key:'type',  label:'Type',  pct:15, tag:'select', opts:['invited-talk','oral-abstract','poster','workshop'] },
+        { key:'title', label:'Title', pct:43, tag:'input', cls:'cell-italic' }
+      ],
+      grants: [
+        { key:'date',      label:'Date',   pct:11, tag:'input', ph:'MMM YYYY' },
+        { key:'source',    label:'Source', pct:13, tag:'input' },
+        { key:'grantType', label:'Type',   pct:10, tag:'input' },
+        { key:'title',     label:'Title',  pct:40, tag:'input' },
+        { key:'status',    label:'Status', pct:18, tag:'select', opts:['awarded','under-review','not-funded'] }
+      ],
+      mentees: [
+        { key:'name',     label:'Name',               pct:25, tag:'input' },
+        { key:'level',    label:'Level',              pct:20, tag:'select', opts:['undergraduate','medical-student','graduate-student','resident','fellow','faculty'] },
+        { key:'comments', label:'Comments / project', pct:49, tag:'input' }
+      ]
+    };
+    const SHOW_ALL = {}, PAGE = 8;
+    const CY = new Date().getFullYear();
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    const state = {
+      file: null,
+      extractedText: '',
+      fileMsg: '', fileMsgCls: 'hidden',
+      years: {},
+      activeYear: '',
+      yearFrom: CY - 10,
+      yearTo: CY,
+      activeTab: 'upload',
+      status: 'idle',   // idle | running | done | error
+      statusMsg: '', statusCls: ''
+    };
+
+    // ── Utilities ─────────────────────────────────────────────────────────────
+    function generateId() { return Math.random().toString(36).slice(2, 9); }
+    function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function lbl(v) { return LABELS[v] || v || ''; }
+    function bdg(v) { return `<span class="badge badge-${BADGE_CLS[v]||'muted'}">${lbl(v)}</span>`; }
+    function makeEmpty(section) {
+      const row = { id: generateId() };
+      COLS[section].forEach(c => { row[c.key] = c.opts ? c.opts[0] : ''; });
+      return row;
+    }
+    function stripId(row) { const o = Object.assign({}, row); delete o.id; return o; }
+
+    // ── Year helpers ──────────────────────────────────────────────────────────
+    function genYearList(from, to) {
+      const out = [];
+      for (let y = from; y <= to; y++) out.push(`${y}-${y+1}`);
+      return out;
+    }
+    function yearLabel(k) {
+      const m = k.match(/^(\d{4})-(\d{4})$/);
+      return m ? `${m[1]}-${m[2].slice(2)}` : k;
+    }
+    function syncYears() {
+      genYearList(state.yearFrom, state.yearTo).forEach(yr => {
+        if (!state.years[yr]) state.years[yr] = emptyYear();
+      });
+    }
+    function emptyYear() { return { publications:[], presentations:[], grants:[], mentees:[] }; }
+    function getAcademicYear(dateStr) {
+      if (!dateStr) return null;
+      const s = String(dateStr);
+      const ym = s.match(/\b(199\d|20[0-3]\d)\b/);
+      if (!ym) return null;
+      const yr = parseInt(ym[1]);
+      const mm = s.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i);
+      const late = !mm || ['jul','aug','sep','oct','nov','dec'].includes(mm[1].toLowerCase().slice(0,3));
+      return late ? `${yr}-${yr+1}` : `${yr-1}-${yr}`;
+    }
+    function firstYearWithData() {
+      for (const k of genYearList(state.yearFrom, state.yearTo)) {
+        const d = state.years[k];
+        if (d && (d.publications.length||d.presentations.length||d.grants.length||d.mentees.length)) return k;
+      }
+      return genYearList(state.yearFrom, state.yearTo)[0] || '';
+    }
+    function unknownHasItems() {
+      const u = state.years['__unknown__'];
+      return u && (u.publications.length||u.presentations.length||u.grants.length||u.mentees.length);
+    }
+
+    // ── Table builders ────────────────────────────────────────────────────────
+    function editRowHtml(section, row, isNew) {
+      const cells = COLS[section].map(c => {
+        let inp;
+        if (c.tag==='select') inp = `<select data-field="${c.key}">${c.opts.map(o=>`<option value="${o}"${row[c.key]===o?' selected':''}>${lbl(o)}</option>`).join('')}</select>`;
+        else if (c.tag==='textarea') inp = `<textarea data-field="${c.key}" rows="2">${esc(row[c.key]||'')}</textarea>`;
+        else inp = `<input type="text" data-field="${c.key}" value="${esc(row[c.key]||'')}" placeholder="${esc(c.ph||'')}">`;
+        return `<td style="width:${c.pct}%">${inp}</td>`;
+      }).join('');
+      const n = isNew ? 1 : 0;
+      return `<tr class="edit-row" data-edit-id="${row.id}">${cells}<td><div class="edit-actions"><button class="btn-save-row" data-action="save-row" data-section="${section}" data-id="${row.id}" data-new="${n}">Save</button><button class="btn-cancel-row" data-action="cancel-row" data-section="${section}" data-id="${row.id}" data-new="${n}">Cancel</button></div></td></tr>`;
+    }
+    function viewRowHtml(section, row) {
+      const cells = COLS[section].map(c => {
+        const v = row[c.key]||'';
+        return `<td style="width:${c.pct}%">${c.tag==='select'?bdg(v):`<span class="${esc(c.cls||'')}">${esc(v)}</span>`}</td>`;
+      }).join('');
+      return `<tr data-view-id="${row.id}">${cells}<td class="row-actions"><button class="icon-btn" data-action="edit-row" data-section="${section}" data-id="${row.id}" title="Edit">&#9998;</button> <button class="icon-btn" data-action="delete-row" data-section="${section}" data-id="${row.id}" title="Delete">&#215;</button></td></tr>`;
+    }
+    function deleteConfirmHtml(section, row) {
+      return `<tr class="delete-confirm" data-delete-id="${row.id}"><td colspan="${COLS[section].length+1}"><div class="delete-confirm-msg">Delete this entry? <button class="btn-confirm-yes" data-action="confirm-delete" data-section="${section}" data-id="${row.id}">Yes</button> <button class="btn-confirm-no" data-action="cancel-delete" data-section="${section}" data-id="${row.id}">No</button></div></td></tr>`;
+    }
+    function tableHtml(section, yr) {
+      const rows = (state.years[yr]||{})[section] || [];
+      const key = section+yr, show = SHOW_ALL[key];
+      const visible = show ? rows : rows.slice(0, PAGE);
+      const heads = COLS[section].map(c=>`<th style="width:${c.pct}%">${c.label}</th>`).join('')+'<th></th>';
+      const body = rows.length===0
+        ? `<tr><td colspan="${COLS[section].length+1}" class="empty-state">No entries yet &mdash; click + Add to add one</td></tr>`
+        : visible.map(r=>viewRowHtml(section,r)).join('');
+      const cnt = show||rows.length<=PAGE ? rows.length : PAGE;
+      const foot = rows.length>0 ? `<div class="table-footer"><span>Showing ${cnt} of ${rows.length}</span>${rows.length>PAGE?`<button class="show-all-btn" data-action="toggle-show-all" data-section="${section}">${show?'Show fewer':'Show all'}</button>`:''}</div>` : '';
+      return `<table class="data-table"><thead><tr>${heads}</tr></thead><tbody>${body}</tbody></table>${foot}`;
+    }
+    function refreshTable(section, yr) {
+      const el = document.getElementById('tbl-'+section);
+      if (el) el.innerHTML = tableHtml(section, yr);
+    }
+    function sectionCardHtml(section, title, yr) {
+      const count = ((state.years[yr]||{})[section]||[]).length;
+      const cLabel = count ? ` <span style="color:var(--c-text-muted);font-size:.8rem;font-weight:400">(${count})</span>` : '';
+      return `<div class="card"><div class="card-header"><span class="card-title">${esc(title)}${cLabel}</span><button class="btn-add" data-action="add-row" data-section="${section}">+ Add</button></div><div id="tbl-${section}">${tableHtml(section,yr)}</div></div>`;
+    }
+
+    // ── File extraction ───────────────────────────────────────────────────────
+    async function handleFileSelect(file) {
+      if (!file) return;
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (!['pdf','docx','txt'].includes(ext)) {
+        state.fileMsg = 'Unsupported file type. Please use PDF, DOCX, or TXT.';
+        state.fileMsgCls = 'error';
+        renderUploadTab(); return;
+      }
+      state.fileMsg = 'Reading…'; state.fileMsgCls = 'ok';
+      state.file = file; state.extractedText = '';
+      renderUploadTab();
+      try {
+        if (ext==='pdf') state.extractedText = await extractPdfText(file);
+        else if (ext==='docx') state.extractedText = await extractDocxText(file);
+        else state.extractedText = await extractTxtText(file);
+
+        const n = state.extractedText.length;
+        if (ext==='pdf' && n < 300) {
+          state.fileMsg = `${file.name} — only ${n.toLocaleString()} characters found. This may be a scanned PDF; results may be poor. Consider using a TXT copy.`;
+          state.fileMsgCls = 'warn';
+        } else {
+          state.fileMsg = `${file.name} — ${n.toLocaleString()} characters read. Now set the year range and click Extract →`;
+          state.fileMsgCls = 'ok';
+        }
+      } catch(e) {
+        state.fileMsg = `Error: ${e.message||e}`;
+        state.fileMsgCls = 'error';
+        state.file = null; state.extractedText = '';
+      }
+      renderUploadTab();
+    }
+
+    async function extractPdfText(file) {
+      const buf = await file.arrayBuffer();
+      let pdf;
+      try { pdf = await pdfjsLib.getDocument({ data: buf }).promise; }
+      catch(e) {
+        if ((e.message||'').toLowerCase().includes('password')) throw new Error('This PDF is password-protected. Remove the password and try again.');
+        throw e;
+      }
+      const pages = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const pg = await pdf.getPage(i);
+        const ct = await pg.getTextContent();
+        const byY = {};
+        ct.items.forEach(item => {
+          const y = Math.round(item.transform[5]);
+          (byY[y] = byY[y]||[]).push(item.str);
+        });
+        const sortedY = Object.keys(byY).map(Number).sort((a,b) => b-a);
+        // Compute median line gap to detect paragraph breaks
+        const gaps = sortedY.slice(1).map((y,i) => sortedY[i] - y).filter(g => g > 0).sort((a,b) => a-b);
+        const medGap = gaps[Math.floor(gaps.length / 2)] || 12;
+        const lines = [];
+        sortedY.forEach((y, i) => {
+          if (i > 0 && (sortedY[i-1] - y) > medGap * 1.4) lines.push(''); // blank line = visual gap
+          const lineText = byY[y].join(' ').trim();
+          if (lineText) lines.push(lineText);
+        });
+        pages.push(lines.join('\n'));
+      }
+      return pages.join('\n\n');
+    }
+
+    async function extractDocxText(file) {
+      const buf = await file.arrayBuffer();
+      const r = await mammoth.convertToHtml({ arrayBuffer: buf });
+      const tmp = document.createElement('div');
+      tmp.innerHTML = r.value;
+      return tmp.textContent || '';
+    }
+
+    function extractTxtText(file) {
+      return new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = e => res(e.target.result);
+        fr.onerror = () => rej(new Error('Could not read file.'));
+        fr.readAsText(file);
+      });
+    }
+
+    // ── Parsing ───────────────────────────────────────────────────────────────
+    function extractYear(text) {
+      const m = String(text).match(/\b(199\d|20[0-3]\d)\b/);
+      return m ? parseInt(m[1]) : null;
+    }
+    function extractMonthYear(text) {
+      const m = String(text).match(/\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})\b/i);
+      if (!m) return '';
+      const ab = {jan:'Jan',feb:'Feb',mar:'Mar',apr:'Apr',may:'May',jun:'Jun',jul:'Jul',aug:'Aug',sep:'Sep',oct:'Oct',nov:'Nov',dec:'Dec'};
+      return `${ab[m[1].slice(0,3).toLowerCase()]} ${m[2]}`;
+    }
+
+    function detectSections(text) {
+      const pats = {
+        publications:  /\b(publications?|peer[\s-]?reviewed|manuscripts?|papers?|published\s+works?)\b/i,
+        presentations: /\b(presentations?|invited\s+(talks?|lectures?|speaker)|abstracts?|lectures?|posters?\s+presentations?|conferences?)\b/i,
+        grants:        /\b(grants?|funding|sponsored\s+research|research\s+support)\b/i,
+        mentees:       /\b(mentees?|mentoring|trainees?|students?\s+(supervised|mentored)|advisees?)\b/i
+      };
+      const lines = text.split('\n');
+      const bounds = [];
+      for (let i = 0; i < lines.length; i++) {
+        const t = lines[i].trim();
+        if (!t || t.length > 80 || /[.;]$/.test(t)) continue;
+        for (const [sec, pat] of Object.entries(pats)) {
+          if (pat.test(t)) { bounds.push({ sec, li: i }); break; }
+        }
+      }
+      if (!bounds.length) return { _noSec: true, publications: text, presentations:'', grants:'', mentees:'' };
+      const r = { publications:'', presentations:'', grants:'', mentees:'' };
+      bounds.forEach(({ sec, li }, i) => {
+        const end = i+1 < bounds.length ? bounds[i+1].li : lines.length;
+        const chunk = lines.slice(li+1, end).join('\n').trim();
+        if (chunk) r[sec] = r[sec] ? r[sec]+'\n\n'+chunk : chunk;
+      });
+      return r;
+    }
+
+    function splitEntries(text) {
+      if (!text.trim()) return [];
+
+      // Strategy 1: numbered list
+      if (/^\s*\d+\.\s/m.test(text))
+        return text.split(/\n(?=\s*\d+\.\s)/)
+          .map(e => e.replace(/^\s*\d+\.\s*/, '').trim())
+          .filter(e => e.length >= 15);
+
+      // Strategy 2: bullet list
+      if (/^[•\-\*]\s/m.test(text))
+        return text.split(/\n(?=[•\-\*]\s)/)
+          .map(e => e.replace(/^[•\-\*]\s*/, '').trim())
+          .filter(e => e.length >= 15);
+
+      // Strategy 3: blank-line separated (works when extractPdfText inserted gaps)
+      if (/\n\s*\n/.test(text)) {
+        const r = text.split(/\n\s*\n/).map(e => e.trim()).filter(e => e.length >= 15);
+        if (r.length > 1) return r;
+      }
+
+      // Strategy 4: citation-boundary detection — insert blank lines at citation edges
+      let processed = text
+        .replace(/(\b\d+[-–]\d+\s*\.)\s*\n([A-Z][a-z])/g, '$1\n\n$2')
+        .replace(/(doi:[^\s]+|PMID:?\s*\d+)\s*\.?\s*\n([A-Z][a-z])/gi, '$1\n\n$2')
+        .replace(/(\b\d{4}\s*;[^.\n]+\.\s*)\n([A-Z][a-z])/g, '$1\n\n$2');
+      if (/\n\s*\n/.test(processed)) {
+        const r = processed.split(/\n\s*\n/).map(e => e.trim()).filter(e => e.length >= 15);
+        if (r.length > 1) return r;
+      }
+
+      // Strategy 5: author-initials line detection ("Smith AB," or "Smith, Jane")
+      const AUTHOR_LINE = /^[A-Z][a-zA-Z''-]{1,20}\s+[A-Z]{1,3}[,.\s]/;
+      const lines = text.split('\n');
+      if (lines.filter(l => AUTHOR_LINE.test(l.trim())).length > 1) {
+        const entries = [], cur = [];
+        for (const line of lines) {
+          if (cur.length && AUTHOR_LINE.test(line.trim())) { entries.push(cur.join(' ')); cur.length = 0; }
+          if (line.trim()) cur.push(line.trim());
+        }
+        if (cur.length) entries.push(cur.join(' '));
+        const r = entries.filter(e => e.length >= 15);
+        if (r.length > 1) return r;
+      }
+
+      // Strategy 6: each non-empty line (last resort)
+      return lines.map(l => l.trim()).filter(l => l.length >= 15);
+    }
+
+    function pubStatus(t) {
+      const s = t.toLowerCase();
+      if (/\bin\s+press\b|\baccepted\b/.test(s)) return 'published';
+      if (/\bsubmitted\b|\bunder\s+review\b/.test(s)) return 'submitted';
+      if (/\bunder\s+revision\b|\brevise\s+and\s+resubmit\b|\bin\s+revision\b/.test(s)) return 'in-revision';
+      if (/\bin\s+prep(?:aration)?\b/.test(s)) return 'in-preparation';
+      if (/\d+\s*\(\d+\)\s*[:;]\s*\d+/.test(t)) return 'published';
+      return 'published';
+    }
+    function pubType(t) {
+      const s = t.toLowerCase();
+      if (/\beditorial\b/.test(s)) return 'editorial';
+      if (/\bsystematic\s+review\b|\bmeta.?analysis\b/.test(s)) return 'review';
+      if (/\breview\s+(article|paper)\b/.test(s)) return 'review';
+      if (/\bguideline\b|\bconsensus\s+statement\b/.test(s)) return 'guidelines';
+      if (/\bbook\s+chapter\b|\bchapter\s+\d/.test(s)||/\bin:\s+[A-Z]/.test(t)) return 'book-chapter';
+      return 'original-article';
+    }
+    function extractYearFromCitation(text) {
+      const s = String(text);
+      let m;
+      m = s.match(/\.\s+(20[0-2]\d|199\d)\s*[;,]/);       if (m) return parseInt(m[1]); // "J Name. 2023;"
+      m = s.match(/\((20[0-2]\d|199\d)\)/);                if (m) return parseInt(m[1]); // "(2023)"
+      m = s.match(/\b(20[0-2]\d|199\d)\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i);
+                                                            if (m) return parseInt(m[1]); // "2023 Jan"
+      m = s.match(/\b(20[0-2]\d|199\d)\b/);               return m ? parseInt(m[1]) : null; // fallback
+    }
+
+    function parsePublications(text) {
+      return splitEntries(text).map(e => {
+        const yr = extractYearFromCitation(e);
+        return { id:generateId(), _yr:yr, _date:extractMonthYear(e)||String(yr||''), citation:e.replace(/\n/g,' ').trim(), status:pubStatus(e), type:pubType(e) };
+      });
+    }
+
+    function presType(t) {
+      const s = t.toLowerCase();
+      if (/\binvited\b|\bkeynote\b|\bplenary\b|\bgrand\s+rounds\b/.test(s)) return 'invited-talk';
+      if (/\bposter\b/.test(s)) return 'poster';
+      if (/\bworkshop\b/.test(s)) return 'workshop';
+      return 'oral-abstract';
+    }
+    function extractEvent(text) {
+      const m = text.match(/(?:Annual|National|International|Regional|Society|American|European)?\s*(?:Meeting|Conference|Symposium|Congress|Summit|Forum|Colloquium|Grand\s+Rounds|Seminar)[^,.;\n]*/i);
+      if (m) return m[0].trim();
+      const parts = text.split(/[,;]/).map(p=>p.trim()).filter(p=>p.length>8&&!/^\d{4}$/.test(p)&&!/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i.test(p));
+      return parts.sort((a,b)=>b.length-a.length)[0]||'';
+    }
+    function extractPresTitle(text) {
+      const q = text.match(/["“]([^"”]{10,})["”]/);
+      if (q) return q[1];
+      return text.replace(/\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4}\b/gi,'').replace(/\b\d{4}\b/,'').split(/[,;.]/)[0].trim()||text.trim();
+    }
+    function parsePresentations(text) {
+      return splitEntries(text).map(e => {
+        const date = extractMonthYear(e);
+        return { id:generateId(), _yr:extractYear(e), _date:date||String(extractYear(e)||''), date, event:extractEvent(e), type:presType(e), title:extractPresTitle(e) };
+      }).filter(p=>p.title.length>=5);
+    }
+
+    const FUNDERS = ['NIH','NSF','AHRQ','DOD','VA','PCORI','HRSA','CDC','NIMH','NHLBI','NCI','NICHD','NIDDK','NIAID','NIGMS','AHA','ACS','RWJF'];
+    function extractSource(text) {
+      for (const k of FUNDERS) if (new RegExp(`\\b${k}\\b`).test(text)) return k;
+      const m = text.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+(?:Foundation|Institute|Society|Association|Agency)\b/);
+      return m ? m[0] : '';
+    }
+    function extractMech(text) {
+      const m = text.match(/\b(R\d{2}|K\d{2}|T\d{2}|F\d{2}|U\d{2}|P\d{2}|DP\d|L\d{2}|Pilot|Bridge|Career\s+Development|Training)\b/i);
+      return m ? m[0] : '';
+    }
+    function grantStatus(t) {
+      const s = t.toLowerCase();
+      if (/\bnot\s+fund(?:ed)?\b|\brejected\b|\bdeclined\b/.test(s)) return 'not-funded';
+      if (/\bpending\b|\bunder\s+review\b|\bsubmitted\b|\bresubmit\b/.test(s)) return 'under-review';
+      return 'awarded';
+    }
+    function extractGrantTitle(text) {
+      const q = text.match(/["“]([^"”]{10,})["”]/);
+      if (q) return q[1];
+      return text
+        .replace(/\b(R\d{2}|K\d{2}|T\d{2}|F\d{2}|U\d{2}|P\d{2}|DP\d)\b/g,'')
+        .replace(new RegExp(`\\b(${FUNDERS.join('|')})\\b`,'g'),'')
+        .replace(extractMonthYear(text),'').replace(/\b\d{4}\b/,'')
+        .replace(/\b(awarded|funded|active|pending|under review|submitted|not funded|rejected|declined)\b/gi,'')
+        .replace(/[$]\d[\d,]*/g,'').trim().replace(/^[^A-Za-z]+/,'').replace(/[^A-Za-z0-9)]+$/,'');
+    }
+    function parseGrants(text) {
+      return splitEntries(text).map(e => {
+        const date = extractMonthYear(e);
+        return { id:generateId(), _yr:extractYear(e), _date:date||String(extractYear(e)||''), date, source:extractSource(e), grantType:extractMech(e), title:extractGrantTitle(e), status:grantStatus(e) };
+      }).filter(g=>g.title.length>=5||g.source);
+    }
+
+    function menteeLevel(text, ctx) {
+      const s = (text+' '+(ctx||'')).toLowerCase();
+      if (/\bundergrad(?:uate)?\b|\b(bs|ba)\b/.test(s)) return 'undergraduate';
+      if (/\bmedical\s+student\b|\bmd\s+student\b/.test(s)) return 'medical-student';
+      if (/\bphd\b|\bdoctoral\b|\bgraduate\s+student\b/.test(s)) return 'graduate-student';
+      if (/\bresident\b/.test(s)) return 'resident';
+      if (/\bfellow(?:ship\s+trainee)?\b/.test(s)) return 'fellow';
+      if (/\bfaculty\b/.test(s)) return 'faculty';
+      return 'graduate-student';
+    }
+    function extractName(text) {
+      const m = text.match(/\b([A-Z][a-z]+(?:\s+[A-Z]\.?\s+)?[A-Z][a-z]+)\b/);
+      return m ? m[1] : text.split(/[,;]/)[0].trim().slice(0,40);
+    }
+    function parseMentees(text) {
+      const lines = text.split('\n');
+      const subHPat = /^([A-Za-z\s]+(student|resident|fellow|faculty|trainee)s?)\s*:/i;
+      let ctx = '';
+      const annotated = lines.map(line => {
+        const sh = line.match(subHPat);
+        if (sh && line.trim().length < 60) { ctx = sh[1]; return null; }
+        return line.trim().length >= 5 ? { line: line.trim(), ctx } : null;
+      }).filter(Boolean);
+
+      return splitEntries(text).map((e, i) => {
+        const c = annotated[i] ? annotated[i].ctx : ctx;
+        const name = extractName(e);
+        return { id:generateId(), _yr:extractYear(e), _date:String(extractYear(e)||''), name, level:menteeLevel(e,c), comments:e.replace(name,'').replace(/^[,;\s-]+/,'').trim().slice(0,200) };
+      }).filter(m=>m.name.length>=3);
+    }
+
+    function assignYear(item) {
+      if (!item._yr) return '__unknown__';
+      const ay = getAcademicYear(item._date||String(item._yr));
+      if (!ay) return '__unknown__';
+      const startY = parseInt(ay.split('-')[0]);
+      if (startY < state.yearFrom || startY > state.yearTo) return null;
+      return ay;
+    }
+
+    function parseTextToYears(text) {
+      const out = {};
+      genYearList(state.yearFrom, state.yearTo).forEach(k => { out[k] = emptyYear(); });
+      out['__unknown__'] = emptyYear();
+
+      const secs = detectSections(text);
+      const noSec = secs._noSec; delete secs._noSec;
+
+      const items = [
+        ...parsePublications(secs.publications||'').map(i=>({...i,_sec:'publications'})),
+        ...parsePresentations(secs.presentations||'').map(i=>({...i,_sec:'presentations'})),
+        ...parseGrants(secs.grants||'').map(i=>({...i,_sec:'grants'})),
+        ...parseMentees(secs.mentees||'').map(i=>({...i,_sec:'mentees'}))
+      ];
+
+      const counts = { publications:0, presentations:0, grants:0, mentees:0 };
+      let filteredCount = 0;
+      items.forEach(item => {
+        const sec = item._sec;
+        const yr = assignYear(item);
+        if (yr === null) { filteredCount++; return; }
+        const row = Object.assign({}, item);
+        delete row._sec; delete row._yr; delete row._date;
+        if (!out[yr]) out[yr] = emptyYear();
+        out[yr][sec].push(row);
+        counts[sec]++;
+      });
+
+      return { out, noSec, counts, filteredCount };
+    }
+
+    // ── Extraction orchestration ──────────────────────────────────────────────
+    function runExtraction() {
+      if (!state.extractedText || state.status==='running') return;
+      state.status = 'running';
+      state.statusMsg = 'Extracting…'; state.statusCls = '';
+      syncYears();
+      renderUploadTab();
+
+      setTimeout(() => {
+        try {
+          const { out, noSec, counts, filteredCount } = parseTextToYears(state.extractedText);
+          Object.keys(out).forEach(yr => { state.years[yr] = out[yr]; });
+          state.status = 'done';
+          const total = Object.values(counts).reduce((a,b)=>a+b,0);
+          const unknownTotal = Object.values(out['__unknown__']||{}).reduce((a,v)=>a+(v.length||0),0);
+
+          if (total === 0 && filteredCount > 0) {
+            state.statusMsg = `No items in ${state.yearFrom}–${state.yearTo}. Found ${filteredCount} items with dates outside this range — widen the year range and extract again.`;
+            state.statusCls = 'status-warn';
+          } else if (total === 0 && unknownTotal > 0) {
+            state.statusMsg = `Found ${unknownTotal} items but none had a recognizable date. Check the “Unknown date” pill in the Review tab.`;
+            state.statusCls = 'status-warn';
+          } else if (total === 0) {
+            state.statusMsg = 'No items found. Make sure your CV has labeled section headers (Publications, Presentations, Grants, Mentees).';
+            state.statusCls = 'status-warn';
+          } else {
+            state.statusMsg = `Done — ${counts.publications} publications, ${counts.presentations} presentations, ${counts.grants} grants, ${counts.mentees} mentees.`
+              + (noSec ? ' (No section headers detected — check results carefully.)' : '')
+              + (filteredCount > 0 ? ` ${filteredCount} items outside ${state.yearFrom}–${state.yearTo} were skipped.` : '');
+            state.statusCls = (noSec || filteredCount > 0) ? 'status-warn' : 'status-ok';
+          }
+          state.activeTab = 'review';
+          state.activeYear = firstYearWithData();
+          render();
+        } catch(e) {
+          state.status = 'error';
+          state.statusMsg = `Error: ${e.message||e}`;
+          state.statusCls = 'status-err';
+          renderUploadTab();
+        }
+      }, 20);
+    }
+
+    // ── Download ──────────────────────────────────────────────────────────────
+    function downloadYear(yrKey) {
+      const d = state.years[yrKey]; if (!d) return;
+      const data = { academicYear: yrKey, publications:(d.publications||[]).map(stripId), presentations:(d.presentations||[]).map(stripId), grants:(d.grants||[]).map(stripId), mentees:(d.mentees||[]).map(stripId) };
+      const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download=`cv-extracted-${yrKey}.json`; a.click();
+      URL.revokeObjectURL(url);
+    }
+    function downloadAll() {
+      genYearList(state.yearFrom, state.yearTo).forEach((k,i)=>setTimeout(()=>downloadYear(k),i*150));
+    }
+
+    // ── Help ──────────────────────────────────────────────────────────────────
+    const FALLBACK_HELP = `## What this tool does
+
+Drop a CV file, set the year range, click Extract. Pattern matching pulls out publications, presentations, grants, and mentees — all inside your browser. Nothing is sent anywhere. Review and edit the results, then download one JSON file per academic year to import into the Faculty Review tool.
+
+## Supported file types
+
+- **PDF** — must be text-based (not scanned). If you can select text in Acrobat, it will work.
+- **DOCX** — Word documents. Complex tables may not extract cleanly.
+- **TXT** — plain text. Paste your CV into Notepad / TextEdit as a fallback.
+
+## Year range
+
+Academic years run July 1 through June 30. "From 2020 To 2025" generates six years: 2020-2021 through 2025-2026. Items are assigned to years by their date. Items with no detectable date appear under "Unknown date."
+
+## What gets extracted
+
+- **Publications** — full citation text, status, type
+- **Presentations** — date, event name, type, title
+- **Grants** — date, funding source, grant mechanism, full title, status
+- **Mentees** — name, level, project description
+
+Mentors and self-evaluation are not extracted (they are filled in directly in the Faculty Review tool).
+
+## Reviewing and editing
+
+After extraction, switch to the Review & Download tab. Use the year pills to move between academic years. Use + Add, the pencil icon (edit), and the x icon (delete) to fix any mistakes. Items under "Unknown date" need manual year assignment.
+
+## Downloading and importing
+
+Click "Download JSON for AY YYYY-YYYY" for one year. Then in your Faculty Review file click "Import data" and select the downloaded JSON. Repeat for each year.
+
+## Tips for better results
+
+- Make sure your CV has clear section headers: "Publications," "Presentations," "Grants," "Mentees / Trainees"
+- Numbered or bulleted lists within sections parse more reliably than dense blocks of text
+- Extraction is imperfect by design — the Review tab is where you clean things up
+
+## Troubleshooting
+
+- **No sections detected** — all items placed as publications. Sort them manually in Review.
+- **Wrong year** — edit the date field in the row, or delete and re-add to the correct year.
+- **Scanned PDF warning** — extract text manually and paste into a .txt file.
+- **Safari downloads one file at a time** — use individual year buttons instead of "Download all."`;
+
+    function md2html(text) {
+      const lines = text.split('\n');
+      const out = []; let inList = false;
+      for (const line of lines) {
+        if (/^## (.+)/.test(line)) {
+          if (inList) { out.push('</ul>'); inList=false; }
+          out.push(`<h2>${esc(line.replace(/^## /,''))}</h2>`);
+        } else if (/^### (.+)/.test(line)) {
+          if (inList) { out.push('</ul>'); inList=false; }
+          out.push(`<h3>${esc(line.replace(/^### /,''))}</h3>`);
+        } else if (/^[-*] (.+)/.test(line)) {
+          if (!inList) { out.push('<ul>'); inList=true; }
+          out.push(`<li>${esc(line.replace(/^[-*] /,''))}</li>`);
+        } else if (!line.trim()) {
+          if (inList) { out.push('</ul>'); inList=false; }
+        } else {
+          if (inList) { out.push('</ul>'); inList=false; }
+          out.push(`<p>${esc(line)}</p>`);
+        }
+      }
+      if (inList) out.push('</ul>');
+      return out.join('\n').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');
+    }
+
+    async function loadHelp() {
+      const el = document.getElementById('help-content'); if (!el) return;
+      try {
+        const r = await fetch('./cv-extractor-guide.md');
+        if (!r.ok) throw 0;
+        el.innerHTML = md2html(await r.text());
+      } catch(_) { el.innerHTML = md2html(FALLBACK_HELP); }
+    }
+
+    function toggleHelp() {
+      const p = document.getElementById('help-panel'), b = document.getElementById('btn-help');
+      if (!p||!b) return;
+      p.hidden = !p.hidden;
+      b.innerHTML = p.hidden ? '? Help &#9660;' : '? Help &#9650;';
+    }
+
+    // ── Rendering ─────────────────────────────────────────────────────────────
+    function buildYearOpts(sel) {
+      let h = '';
+      for (let y=1990; y<=CY+5; y++) h+=`<option value="${y}"${y===sel?' selected':''}>${y}</option>`;
+      return h;
+    }
+
+    function renderUploadTab() {
+      const fromTo = state.yearFrom && state.yearTo && state.yearFrom<=state.yearTo;
+      const count = fromTo ? state.yearTo-state.yearFrom+1 : 0;
+      const summary = fromTo ? `${count} academic year${count!==1?'s':''} will be generated: ${state.yearFrom}-${state.yearFrom+1}${count>1?` … ${state.yearTo}-${state.yearTo+1}`:''}` : '';
+      const canExtract = state.extractedText.length>0 && fromTo && state.status!=='running';
+
+      document.getElementById('content-area').innerHTML = `
+<div class="card" style="margin-bottom:1.25rem">
+  <div class="card-header"><span class="card-title">Step 1 &mdash; Upload your CV</span></div>
+  <div style="padding:1.5rem">
+    <div id="drop-zone" class="drop-zone">
+      <div class="drop-arrow">&#8681;</div>
+      <div class="drop-main">Drop your CV here, or <span class="drop-link">click to browse</span></div>
+      <div class="drop-formats">PDF &nbsp;&middot;&nbsp; DOCX &nbsp;&middot;&nbsp; TXT &nbsp;&nbsp;&mdash;&nbsp;&nbsp; nothing leaves your browser</div>
+    </div>
+    <div class="file-info ${esc(state.fileMsgCls)}">${esc(state.fileMsg)}</div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:1.25rem">
+  <div class="card-header"><span class="card-title">Step 2 &mdash; Set the year range</span></div>
+  <div style="padding:1.25rem">
+    <div class="year-range-row">
+      <label>From <select id="sel-from" class="year-select">${buildYearOpts(state.yearFrom)}</select></label>
+      <span style="color:var(--c-text-muted)">to</span>
+      <label>To <select id="sel-to" class="year-select">${buildYearOpts(state.yearTo)}</select></label>
+    </div>
+    <div class="year-summary">${esc(summary)}</div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:1.25rem">
+  <div class="card-header"><span class="card-title">Step 3 &mdash; Extract</span></div>
+  <div style="padding:1.25rem">
+    <div class="extract-row">
+      <button id="btn-extract" class="btn btn-primary"${canExtract?'':' disabled'}>Extract &#8594;</button>
+      ${state.statusMsg ? `<span class="${esc(state.statusCls)}">${esc(state.statusMsg)}</span>` : ''}
+    </div>
+    ${state.status==='done' ? `<p style="margin-top:.75rem;font-size:.82rem;color:var(--c-text-muted)">Switch to the <strong>Review &amp; Download</strong> tab to check results and download JSON files.</p>` : `<p style="margin-top:.5rem;font-size:.78rem;color:var(--c-text-muted)">Pattern matching is not perfect &mdash; use the Review tab to correct any mistakes.</p>`}
+  </div>
+</div>`;
+    }
+
+    function renderReviewTab() {
+      const yr = state.activeYear;
+      const keys = genYearList(state.yearFrom, state.yearTo);
+      const pills = keys.map(k=>`<button class="rev-pill${k===yr?' active':''}" data-year="${k}">${esc(yearLabel(k))}</button>`).join('');
+      const unkPill = unknownHasItems() ? `<button class="rev-pill unknown${yr==='__unknown__'?' active':''}" data-year="__unknown__">Unknown date</button>` : '';
+      const dlBtn = yr && yr!=='__unknown__' ? `<button id="btn-dl-year" class="btn btn-primary">&#8595; Download JSON for AY ${esc(yearLabel(yr))}</button>` : '';
+
+      const totalInYear = yr ? ['publications','presentations','grants','mentees'].reduce((a,s)=>a+((state.years[yr]||{})[s]||[]).length,0) : 0;
+      const allEmpty = yr && totalInYear === 0 && state.status === 'done';
+
+      document.getElementById('content-area').innerHTML = yr ? `
+<div class="pills-bar"><span class="pills-label">Year:</span>${pills}${unkPill}</div>
+${allEmpty ? `<div style="background:var(--c-amber-light);border:1px solid var(--c-amber);border-radius:var(--radius-md);color:var(--c-amber-fg);font-size:.875rem;margin-bottom:1.25rem;padding:.85rem 1.1rem">
+  No items in this year. If you expected data here, go back to <strong>Upload &amp; Extract</strong> and check the status message &mdash; the year range may need to be widened, or section headers may not have been detected.
+</div>` : ''}
+${sectionCardHtml('publications','Publications',yr)}
+${sectionCardHtml('presentations','Presentations',yr)}
+${sectionCardHtml('grants','Grants',yr)}
+${sectionCardHtml('mentees','Mentees',yr)}
+<div class="download-bar">
+  ${dlBtn}
+  <button id="btn-dl-all" class="btn btn-outlined">&#8595; Download all years separately</button>
+  <span class="download-note">Safari may allow only one download at a time &mdash; use individual buttons if needed.</span>
+</div>` : `<div style="color:var(--c-text-muted);padding:3rem;text-align:center;line-height:1.8">
+  Go to <strong style="color:var(--c-text-primary)">Upload &amp; Extract</strong>, upload your CV, set the year range, then click <strong style="color:var(--c-teal)">Extract &rarr;</strong>
+</div>`;
+    }
+
+    function render() {
+      document.getElementById('tab-bar').innerHTML = TABS.map(t=>`<button class="tab-btn${t.id===state.activeTab?' active':''}" data-tab="${t.id}">${t.label}</button>`).join('');
+      if (state.activeTab==='upload') renderUploadTab();
+      else renderReviewTab();
+    }
+
+    // ── Events ────────────────────────────────────────────────────────────────
+    document.addEventListener('click', e => {
+      if (e.target.id==='btn-help') { toggleHelp(); return; }
+      if (e.target.id==='btn-extract') { runExtraction(); return; }
+      if (e.target.id==='btn-dl-year') { downloadYear(state.activeYear); return; }
+      if (e.target.id==='btn-dl-all') { downloadAll(); return; }
+
+      const tab = e.target.closest('.tab-btn');
+      if (tab) { state.activeTab=tab.dataset.tab; render(); return; }
+
+      const pill = e.target.closest('.rev-pill[data-year]');
+      if (pill) { state.activeYear=pill.dataset.year; renderReviewTab(); return; }
+
+      if (e.target.closest('#drop-zone')) { document.getElementById('file-input').click(); return; }
+
+      const btn = e.target.closest('[data-action]'); if (!btn) return;
+      const action=btn.dataset.action, sec=btn.dataset.section, id=btn.dataset.id, yr=state.activeYear;
+      if (!state.years[yr]) state.years[yr]=emptyYear();
+
+      if (action==='add-row') {
+        const row=makeEmpty(sec);
+        const div=document.getElementById('tbl-'+sec); if (!div) return;
+        const tbody=div.querySelector('tbody'); if (!tbody) return;
+        const empty=tbody.querySelector('.empty-state'); if (empty) empty.closest('tr').remove();
+        tbody.insertAdjacentHTML('beforeend',editRowHtml(sec,row,true));
+        div.querySelector(`[data-edit-id="${row.id}"] input,[data-edit-id="${row.id}"] select,[data-edit-id="${row.id}"] textarea`)?.focus();
+        return;
+      }
+      if (action==='edit-row') {
+        const row=state.years[yr][sec]?.find(r=>r.id===id); if (!row) return;
+        const tr=document.querySelector(`[data-view-id="${id}"]`); if (tr) tr.outerHTML=editRowHtml(sec,row,false);
+        document.querySelector(`[data-edit-id="${id}"] input,[data-edit-id="${id}"] select,[data-edit-id="${id}"] textarea`)?.focus();
+        return;
+      }
+      if (action==='save-row') {
+        const isNew=btn.dataset.new==='1';
+        const editTr=document.querySelector(`[data-edit-id="${id}"]`); if (!editTr) return;
+        const rowData={id}; editTr.querySelectorAll('[data-field]').forEach(inp=>{rowData[inp.dataset.field]=inp.value;});
+        if (isNew) { state.years[yr][sec].push(rowData); }
+        else { const idx=state.years[yr][sec].findIndex(r=>r.id===id); if(idx>=0) Object.assign(state.years[yr][sec][idx],rowData); }
+        editTr.outerHTML=viewRowHtml(sec, isNew?rowData:state.years[yr][sec].find(r=>r.id===id));
+        return;
+      }
+      if (action==='cancel-row') {
+        const isNew=btn.dataset.new==='1';
+        const editTr=document.querySelector(`[data-edit-id="${id}"]`); if (!editTr) return;
+        if (isNew) { editTr.remove(); const tb=document.querySelector('#tbl-'+sec+' tbody'); if(tb&&!tb.querySelector('tr'))tb.innerHTML=`<tr><td colspan="${COLS[sec].length+1}" class="empty-state">No entries yet &mdash; click + Add to add one</td></tr>`; }
+        else { const row=state.years[yr][sec]?.find(r=>r.id===id); if(row) editTr.outerHTML=viewRowHtml(sec,row); }
+        return;
+      }
+      if (action==='delete-row') {
+        const tr=document.querySelector(`[data-view-id="${id}"]`), row=state.years[yr][sec]?.find(r=>r.id===id);
+        if (tr&&row) tr.outerHTML=deleteConfirmHtml(sec,row); return;
+      }
+      if (action==='confirm-delete') {
+        state.years[yr][sec]=state.years[yr][sec].filter(r=>r.id!==id);
+        refreshTable(sec,yr); return;
+      }
+      if (action==='cancel-delete') {
+        const tr=document.querySelector(`[data-delete-id="${id}"]`), row=state.years[yr][sec]?.find(r=>r.id===id);
+        if (tr&&row) tr.outerHTML=viewRowHtml(sec,row); return;
+      }
+      if (action==='toggle-show-all') { SHOW_ALL[sec+yr]=!SHOW_ALL[sec+yr]; refreshTable(sec,yr); return; }
+    });
+
+    document.addEventListener('input', e => {
+      if (e.target.id==='sel-from') { state.yearFrom=parseInt(e.target.value); renderUploadTab(); }
+      if (e.target.id==='sel-to')   { state.yearTo  =parseInt(e.target.value); renderUploadTab(); }
+    });
+
+    document.addEventListener('keydown', e => {
+      const tr=e.target.closest('.edit-row'); if (!tr) return;
+      if (e.key==='Enter'&&e.target.tagName!=='TEXTAREA') { e.preventDefault(); tr.querySelector('[data-action="save-row"]')?.click(); }
+      if (e.key==='Escape') tr.querySelector('[data-action="cancel-row"]')?.click();
+    });
+
+    document.addEventListener('dragover', e => { const dz=e.target.closest('#drop-zone'); if(dz){e.preventDefault();dz.classList.add('dragover');} });
+    document.addEventListener('dragleave', e => { e.target.closest('#drop-zone')?.classList.remove('dragover'); });
+    document.addEventListener('drop', e => {
+      const dz=e.target.closest('#drop-zone'); if(!dz) return;
+      e.preventDefault(); dz.classList.remove('dragover');
+      const f=e.dataTransfer.files[0]; if(f) handleFileSelect(f);
+    });
+
+    document.getElementById('file-input').addEventListener('change', e => {
+      const f=e.target.files[0]; if(f) handleFileSelect(f); e.target.value='';
+    });
+
+    document.addEventListener('DOMContentLoaded', () => { syncYears(); render(); loadHelp(); });
+  </script>
+</body>
+</html>

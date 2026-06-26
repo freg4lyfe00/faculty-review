@@ -54,8 +54,11 @@
     .card-header { align-items: center; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; padding: .875rem 1.25rem; }
     .card-title { font-size: .95rem; font-weight: 600; }
     .card-note { color: var(--c-text-muted); font-size: .75rem; margin-top: .2rem; }
-    .btn-add { background: none; border: none; color: var(--c-teal); cursor: pointer; font-size: .82rem; font-weight: 500; padding: .25rem .5rem; }
-    .btn-add:hover { text-decoration: underline; }
+    .profile-edit-btn { background: none; border: none; color: rgba(255,255,255,.45); cursor: pointer; font-size: .82rem; margin-top: .15rem; padding: .1rem .3rem; }
+    .profile-edit-btn:hover { color: #fff; }
+    .card-add-footer { padding: .35rem .75rem .6rem; }
+    .btn-add-full { background: none; border: 1.5px dashed var(--c-border); border-radius: var(--radius-sm); color: var(--c-teal); cursor: pointer; font-size: 1.1rem; font-weight: 500; padding: .35rem; transition: border-color .15s, background .15s; width: 100%; }
+    .btn-add-full:hover { background: var(--c-teal-light); border-color: var(--c-teal); }
     /* Tables */
     .data-table { border-collapse: collapse; width: 100%; }
     .data-table th { border-bottom: 1px solid var(--c-border); color: var(--c-text-muted); font-size: .72rem; font-weight: 500; letter-spacing: .04em; padding: .5rem .75rem; text-align: left; text-transform: uppercase; }
@@ -165,7 +168,7 @@
     /* Print */
     .section-print-header { display: none; }
     @media print {
-      #tab-bar, #app-footer, .ay-pills, .btn-add, .row-actions, .goal-delete, .recovery-banner, .validation-alert, .setup-card { display: none; }
+      #tab-bar, #app-footer, .ay-pills, .btn-add, .btn-add-full, .card-add-footer, .row-actions, .goal-delete, .recovery-banner, .validation-alert, .setup-card { display: none; }
       .card { border: 0.5px solid #ccc; box-shadow: none; break-inside: avoid; margin-bottom: 1rem; }
       body { color: #000; font-size: 12px; height: auto; overflow: visible; }
       #content-area { overflow: visible; }
@@ -175,7 +178,7 @@
 </head>
 <body>
   <header id="app-header">
-    <div><div id="faculty-name" class="faculty-name"></div><div id="faculty-title" class="faculty-title"></div></div>
+    <div id="faculty-info"><div id="faculty-name" class="faculty-name"></div><div id="faculty-title" class="faculty-title"></div></div>
     <div style="display:flex;align-items:center;gap:.75rem">
       <div id="ay-pills" class="ay-pills"></div>
       <button id="btn-import" class="ay-pill">Import data</button>
@@ -433,12 +436,18 @@ ${stateJson}
       setTimeout(() => el.classList.add('hidden'), 6000);
     }
 
-    function renderSetupCard() {
-      if (state.faculty.name || document.getElementById('setup-card')) return;
+    function showProfileCard() {
+      if (document.getElementById('setup-card')) return;
+      const isEdit = !!state.faculty.name;
+      const heading = isEdit ? 'Edit profile' : 'Welcome — please enter your details to get started';
+      const btnLabel = isEdit ? 'Save changes' : 'Begin →';
+      const closeBtn = isEdit ? `<button class="icon-btn" data-action="close-profile-card" style="color:var(--c-text-muted)">✕</button>` : '';
       const card = document.createElement('div'); card.id = 'setup-card'; card.className = 'setup-card';
-      card.innerHTML = `<div class="card-header" style="background:var(--c-purple-light)"><span class="card-title">Welcome — please enter your details to get started</span></div><div style="padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><div class="se-label" style="margin-top:0">Name</div><input class="setup-input" id="setup-name" type="text" placeholder="Full name" value="${esc(state.faculty.name||'')}"></div><div><div class="se-label" style="margin-top:0">Career Stage</div><select class="setup-input" id="setup-title"><option value="" disabled ${!state.faculty.title?'selected':''}>Select career stage</option><option value="Assistant Professor" ${state.faculty.title==='Assistant Professor'?'selected':''}>Assistant Professor</option><option value="Associate Professor" ${state.faculty.title==='Associate Professor'?'selected':''}>Associate Professor</option><option value="Professor" ${state.faculty.title==='Professor'?'selected':''}>Professor</option></select></div><div><div class="se-label" style="margin-top:0">Division</div><input class="setup-input" id="setup-division" type="text" placeholder="Division / department" value="${esc(state.faculty.division||'')}"></div><div style="display:flex;align-items:flex-end"><button class="btn btn-primary" id="btn-setup-save" style="width:100%">Begin →</button></div></div>`;
+      card.innerHTML = `<div class="card-header" style="background:var(--c-purple-light)"><span class="card-title">${heading}</span>${closeBtn}</div><div style="padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><div class="se-label" style="margin-top:0">Name</div><input class="setup-input" id="setup-name" type="text" placeholder="Full name" value="${esc(state.faculty.name||'')}"></div><div><div class="se-label" style="margin-top:0">Career Stage</div><select class="setup-input" id="setup-title"><option value="" disabled ${!state.faculty.title?'selected':''}>Select career stage</option><option value="Assistant Professor" ${state.faculty.title==='Assistant Professor'?'selected':''}>Assistant Professor</option><option value="Associate Professor" ${state.faculty.title==='Associate Professor'?'selected':''}>Associate Professor</option><option value="Professor" ${state.faculty.title==='Professor'?'selected':''}>Professor</option></select></div><div><div class="se-label" style="margin-top:0">Division</div><input class="setup-input" id="setup-division" type="text" placeholder="Division / department" value="${esc(state.faculty.division||'')}"></div><div style="display:flex;align-items:flex-end"><button class="btn btn-primary" id="btn-setup-save" style="width:100%">${btnLabel}</button></div></div>`;
       document.getElementById('content-area').before(card);
+      document.getElementById('setup-name').focus();
     }
+    function renderSetupCard() { if (!state.faculty.name) showProfileCard(); }
 
     let pendingBackup = null;
     function autoSave() {
@@ -638,7 +647,7 @@ ${stateJson}
 
     // ── Tab renderers ────────────────────────────────────────────────────────
     function cardHtml(id, title, yr, section, body) {
-      return `<div class="card"><div class="card-header"><span class="card-title">${title} · AY ${yr}</span><button class="btn-add" data-action="add-row" data-section="${section}">+ Add</button></div><div id="table-${section}">${body}</div></div>`;
+      return `<div class="card"><div class="card-header"><span class="card-title">${title} · AY ${yr}</span></div><div id="table-${section}">${body}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-row" data-section="${section}">+</button></div></div>`;
     }
 
     function renderPublications(yr) { document.getElementById('content-area').innerHTML = cardHtml('publications','Publications',yr,'publications',tableHtml('publications',yr)); }
@@ -674,11 +683,12 @@ ${stateJson}
       const mentorList = (d.mentors||[]).map(mentorRowHtml).join('') || `<p class="empty-state">No mentors yet — use Add to get started</p>`;
       document.getElementById('content-area').innerHTML = `
         <div class="card">
-          <div class="card-header"><div><span class="card-title">My mentor(s)</span><p class="card-note">Include the name and title of each person who mentors you.</p></div><button class="btn-add" data-action="add-mentor">+ Add mentor</button></div>
+          <div class="card-header"><div><span class="card-title">My mentor(s)</span><p class="card-note">Include the name and title of each person who mentors you.</p></div></div>
           <div class="mentor-col-headers"><span class="mentor-col-label">Name</span><span class="mentor-col-label">Title / role &amp; institution</span><span style="width:2rem"></span></div>
           <div id="mentor-list">${mentorList}</div>
+          <div class="card-add-footer"><button class="btn-add-full" data-action="add-mentor">+</button></div>
         </div>
-        <div class="card"><div class="card-header"><span class="card-title">My mentees · AY ${yr}</span><button class="btn-add" data-action="add-row" data-section="mentees">+ Add</button></div><div id="table-mentees">${tableHtml('mentees',yr)}</div></div>`;
+        <div class="card"><div class="card-header"><span class="card-title">My mentees · AY ${yr}</span></div><div id="table-mentees">${tableHtml('mentees',yr)}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-row" data-section="mentees">+</button></div></div>`;
     }
 
     function renderSelfeval(yr) {
@@ -694,9 +704,9 @@ ${stateJson}
       const ldRows = se.leadership.map(leadershipRowHtml).join('') || '<p class="empty-state">No roles added yet.</p>';
       document.getElementById('content-area').innerHTML = `
 <div class="card"><div class="card-header"><span class="card-title">Contributions &amp; highlights</span></div><div style="padding:1.25rem"><p class="se-hint">What are your most important contributions and highlights this year?</p><p class="se-hint">Include your most significant contribution to the department, as well as anything else you'd like to highlight.</p>${TA('contributions',120)}</div></div>
-<div class="card"><div class="card-header"><span class="card-title">${priorTitle} — review &amp; update</span><button class="btn-add" data-action="add-goal" data-goal-section="goalsReview">+ Add goal</button></div><p class="se-hint" style="padding:.5rem 1.25rem 0">${reviewHint}</p><div id="goals-review" style="padding:.75rem 1.25rem 1.25rem">${rGoals}</div></div>
-<div class="card"><div class="card-header"><span class="card-title">AY '${yr} goals</span><button class="btn-add" data-action="add-goal" data-goal-section="goalsNext">+ Add goal</button></div><p class="se-hint" style="padding:.5rem 1.25rem 0">Set your goals for the coming year and note what support you need.</p><div id="goals-next" style="padding:.75rem 1.25rem 1.25rem">${nGoals}</div></div>
-<div class="card"><div class="card-header"><span class="card-title">Leadership roles</span><button class="btn-add" data-action="add-leadership">+ Add role</button></div><div class="ld-cols"><span class="mentor-col-label" style="flex:1">Role</span><span class="mentor-col-label" style="flex:1">Plan / focus for ${yr}</span><span style="width:2rem"></span></div><div id="ld-list">${ldRows}</div></div>
+<div class="card"><div class="card-header"><span class="card-title">${priorTitle} — review &amp; update</span></div><p class="se-hint" style="padding:.5rem 1.25rem 0">${reviewHint}</p><div id="goals-review" style="padding:.75rem 1.25rem 1.25rem">${rGoals}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-goal" data-goal-section="goalsReview">+</button></div></div>
+<div class="card"><div class="card-header"><span class="card-title">AY '${yr} goals</span></div><p class="se-hint" style="padding:.5rem 1.25rem 0">Set your goals for the coming year and note what support you need.</p><div id="goals-next" style="padding:.75rem 1.25rem 1.25rem">${nGoals}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-goal" data-goal-section="goalsNext">+</button></div></div>
+<div class="card"><div class="card-header"><span class="card-title">Leadership roles</span></div><div class="ld-cols"><span class="mentor-col-label" style="flex:1">Role</span><span class="mentor-col-label" style="flex:1">Plan / focus for ${yr}</span><span style="width:2rem"></span></div><div id="ld-list">${ldRows}</div><div class="card-add-footer"><button class="btn-add-full" data-action="add-leadership">+</button></div></div>
 <div class="card"><div class="card-header"><span class="card-title">Academic promotion</span></div><div style="padding:1.25rem">${CK('promotion.active','Actively working toward academic promotion in the next year')}<div class="se-label">Where are you in this process?</div>${TA('promotion.whereInProcess',60)}<div class="se-label">What input or guidance do you need?</div>${TA('promotion.guidanceNeeded',52)}</div></div>
 <div class="card"><div class="card-header"><span class="card-title">CARE+ &amp; salary review</span></div><div style="padding:1.25rem">${CK('careReview.completed','Reviewed CARE+ salary sheet and funding sources with Division Chief')}<div class="se-label">Outstanding questions or unresolved issues</div>${TA('careReview.outstandingQuestions',52)}</div></div>
 <div class="card"><div class="card-header"><span class="card-title">Professional development</span></div><div style="padding:1.25rem"><div class="se-label" style="margin-top:0">How can the department support your career over the next 2–3 years?</div>${TA('profDevelopment',80)}</div></div>
@@ -816,6 +826,11 @@ ${stateJson}
     function renderHeader() {
       document.getElementById('faculty-name').textContent = state.faculty.name || 'Faculty Review';
       document.getElementById('faculty-title').textContent = state.faculty.title || '';
+      if (!document.getElementById('btn-edit-profile')) {
+        const b = document.createElement('button'); b.id = 'btn-edit-profile'; b.className = 'profile-edit-btn'; b.title = 'Edit profile'; b.textContent = '✎';
+        document.getElementById('faculty-info').appendChild(b);
+      }
+      document.getElementById('btn-edit-profile').style.display = state.faculty.name ? '' : 'none';
       const p = document.getElementById('ay-pills'); p.innerHTML = '';
       Object.keys(state.years).forEach(yr => {
         const b = document.createElement('button'); b.className = 'ay-pill' + (yr === state.activeYear ? ' active' : ''); b.textContent = yr; b.dataset.year = yr; p.appendChild(b);
@@ -979,9 +994,21 @@ ${stateJson}
       if (e.key === 'Escape') editTr.querySelector('[data-action="cancel-row"]')?.click();
     });
 
+    // ── Keyboard shortcuts ───────────────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey && e.key === 'n') {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        e.preventDefault();
+        document.querySelector('#content-area .btn-add-full')?.click();
+      }
+    });
+
     // ── Event delegation: chrome ─────────────────────────────────────────────
     document.addEventListener('click', e => {
       if (e.target.id === 'btn-add-year') { addYear(); return; }
+      if (e.target.id === 'btn-edit-profile') { showProfileCard(); return; }
+      if (e.target.dataset.action === 'close-profile-card') { document.getElementById('setup-card')?.remove(); return; }
       if (e.target.id === 'btn-save') { saveMasterFile(); return; }
       if (e.target.id === 'btn-export') { exportReadOnlyDashboard(); return; }
       if (e.target.id === 'btn-import') { importData(); return; }

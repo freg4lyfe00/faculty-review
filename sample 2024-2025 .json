@@ -1,0 +1,57 @@
+{
+  "academicYear": "2024-2025",
+  "publications": [
+    {
+      "citation": "Garcia R, Nguyen T. Patterns in example formation across diverse settings. Journal of Examples. 2025;11(2):88-99.",
+      "status": "published",
+      "type": "original-article"
+    },
+    {
+      "citation": "Garcia R. Editorial: Why examples matter. Journal of Hypotheticals. 2025.",
+      "status": "published",
+      "type": "editorial"
+    }
+  ],
+  "presentations": [
+    {
+      "date": "Oct 2024",
+      "event": "Annual Symposium on Example Research",
+      "type": "oral-abstract",
+      "title": "Cross-setting variability in example outcomes"
+    },
+    {
+      "date": "Feb 2025",
+      "event": "Regional Workshop Series",
+      "type": "workshop",
+      "title": "Teaching example methodology to early-career researchers"
+    }
+  ],
+  "grants": [
+    {
+      "date": "Aug 2024",
+      "source": "Regional Research Council",
+      "grantType": "Seed grant",
+      "title": "Foundational study of example variability",
+      "status": "awarded"
+    },
+    {
+      "date": "Apr 2025",
+      "source": "National Institute of Examples",
+      "grantType": "R21",
+      "title": "Exploratory mechanisms of example diversity",
+      "status": "not-funded"
+    }
+  ],
+  "mentees": [
+    {
+      "name": "Taylor Brooks",
+      "level": "undergraduate",
+      "comments": "Independent study on example classification methods"
+    },
+    {
+      "name": "Morgan Reyes",
+      "level": "graduate-student",
+      "comments": "Thesis work on example variability; first-author manuscript in progress"
+    }
+  ]
+}

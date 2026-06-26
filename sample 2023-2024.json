@@ -1,0 +1,86 @@
+{
+  "academicYear": "2023-2024",
+  "publications": [
+    {
+      "citation": "Patel S, Okafor C. Longitudinal patterns in example adoption. Journal of Examples. 2024;10(1):12-24.",
+      "status": "published",
+      "type": "original-article"
+    },
+    {
+      "citation": "Patel S. Guidelines for standardized example reporting. Journal of Hypotheticals. 2024;5(2):45-50.",
+      "status": "published",
+      "type": "guidelines"
+    },
+    {
+      "citation": "Patel S, Lindqvist M. Comparative review of example frameworks. Ann Hypotheticals. 2024;19(4):300-315.",
+      "status": "published",
+      "type": "review"
+    },
+    {
+      "citation": "Patel S, Okafor C, Diallo F. A multi-site evaluation of example interventions.",
+      "status": "submitted",
+      "type": "original-article"
+    },
+    {
+      "citation": "Okafor C, Patel S. Methodological considerations in example design.",
+      "status": "in-revision",
+      "type": "original-article"
+    },
+    {
+      "citation": "Patel S. Examples in transition: a chapter overview. In: Handbook of Examples. 2024.",
+      "status": "in-preparation",
+      "type": "book-chapter"
+    }
+  ],
+  "presentations": [
+    { "date": "Jul 2023", "event": "Summer Institute on Examples", "type": "invited-talk", "title": "Foundations of modern example research" },
+    { "date": "Aug 2023", "event": "International Example Society Meeting", "type": "oral-abstract", "title": "Adoption patterns across three cohorts" },
+    { "date": "Sep 2023", "event": "Regional Grand Rounds", "type": "invited-talk", "title": "What examples teach us about variability" },
+    { "date": "Oct 2023", "event": "Annual Symposium on Example Research", "type": "poster", "title": "Early findings from the multi-site evaluation" },
+    { "date": "Nov 2023", "event": "Cross-Institutional Workshop", "type": "workshop", "title": "Hands-on example design methods" },
+    { "date": "Jan 2024", "event": "Winter Conference on Hypotheticals", "type": "oral-abstract", "title": "Methodological pitfalls in example studies" },
+    { "date": "Feb 2024", "event": "Department Grand Rounds", "type": "invited-talk", "title": "A decade of example research: where next?" },
+    { "date": "Mar 2024", "event": "National Conference on Example Studies", "type": "poster", "title": "Reporting standards: a proposal" },
+    { "date": "Apr 2024", "event": "Junior Faculty Forum", "type": "workshop", "title": "Mentoring the next generation of example researchers" },
+    { "date": "May 2024", "event": "Annual Society Meeting", "type": "oral-abstract", "title": "Comparative outcomes across example frameworks" }
+  ],
+  "grants": [
+    {
+      "date": "Jul 2023",
+      "source": "National Institute of Examples",
+      "grantType": "R01",
+      "title": "Multi-site evaluation of example interventions",
+      "status": "awarded"
+    },
+    {
+      "date": "Oct 2023",
+      "source": "Foundation for Hypothetical Research",
+      "grantType": "Career Development Award",
+      "title": "Methodological innovation in example design",
+      "status": "awarded"
+    },
+    {
+      "date": "Jan 2024",
+      "source": "Regional Research Council",
+      "grantType": "Pilot grant",
+      "title": "Standardizing example reporting practices",
+      "status": "under-review"
+    },
+    {
+      "date": "Apr 2024",
+      "source": "International Example Society",
+      "grantType": "Travel award",
+      "title": "Dissemination of multi-site evaluation findings",
+      "status": "not-funded"
+    }
+  ],
+  "mentees": [
+    { "name": "Avery Collins", "level": "undergraduate", "comments": "Research assistant on multi-site evaluation" },
+    { "name": "Sam Whitfield", "level": "medical-student", "comments": "Summer project on example adoption patterns" },
+    { "name": "Riley Tanaka", "level": "graduate-student", "comments": "Dissertation chapter on example frameworks" },
+    { "name": "Casey Bloom", "level": "graduate-student", "comments": "Co-author on methodological pitfalls abstract" },
+    { "name": "Devon Marsh", "level": "resident", "comments": "QI project applying example design methods" },
+    { "name": "Harper Singh", "level": "fellow", "comments": "K-award preparation; second-author on review paper" },
+    { "name": "Quinn Alvarez", "level": "faculty", "comments": "Junior faculty co-mentee on grant writing" }
+  ]
+}

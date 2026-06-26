@@ -1,0 +1,57 @@
+{
+  "academicYear": "2025-2026",
+  "publications": [
+    {
+      "citation": "Smith J, Doe A. A study of example things. Journal of Examples. 2026;12(3):100-110.",
+      "status": "published",
+      "type": "original-article"
+    },
+    {
+      "citation": "Smith J. Another paper currently in review. Journal of Hypotheticals. 2026.",
+      "status": "submitted",
+      "type": "review"
+    }
+  ],
+  "presentations": [
+    {
+      "date": "Mar 2026",
+      "event": "National Conference on Example Studies",
+      "type": "poster",
+      "title": "Preliminary findings on example things"
+    },
+    {
+      "date": "Jan 2026",
+      "event": "Department Grand Rounds",
+      "type": "invited-talk",
+      "title": "An overview of recent example research"
+    }
+  ],
+  "grants": [
+    {
+      "date": "Sep 2025",
+      "source": "National Institute of Examples",
+      "grantType": "R01",
+      "title": "Mechanisms of example formation",
+      "status": "awarded"
+    },
+    {
+      "date": "Dec 2025",
+      "source": "Foundation for Hypothetical Research",
+      "grantType": "Pilot grant",
+      "title": "Early-stage exploration of example variability",
+      "status": "under-review"
+    }
+  ],
+  "mentees": [
+    {
+      "name": "Pat Lee",
+      "level": "graduate-student",
+      "comments": "Co-mentoring on example formation project"
+    },
+    {
+      "name": "Jordan Kim",
+      "level": "resident",
+      "comments": "Clinical research rotation, Q2 2026"
+    }
+  ]
+}
